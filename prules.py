@@ -4,14 +4,14 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : parserules.py
 # Creation Date : 02-04-2012
-# Last Modified : Thu 10 May 2012 07:32:48 PM EEST
+# Last Modified : Thu 10 May 2012 08:26:24 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
 from tokrules import *
 import ply.yacc as yacc
 from tree import node
 from sys import argv
-errors = []
+perrors = []
 
 precedence = (
         ('nonassoc', 'Let', 'In'),
@@ -61,7 +61,7 @@ def p_empty(p):
 
 
 def p_error(p):
-    if p==None:
+    if p:
         yacc.restart()
     else:
         errors.append(p)

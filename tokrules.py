@@ -4,76 +4,76 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : tokrules.py
 # Creation Date : 29-03-2012
-# Last Modified : Thu 10 May 2012 07:32:13 PM EEST
+# Last Modified : Thu 10 May 2012 08:26:12 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 from sys import argv
+terrors = []
 
 reserved = {
-'void'      : 'Void',
-'bool'      : 'Bool',
-'int'       : 'Int',
-'char'      : 'Char',
-'size'      : 'Size',
-'new'       : 'New',
-'delete'    : 'Delete',
-'if'        : 'If',
-'else'      : 'Else',
-'for'       : 'For',
-'while'     : 'While',
-'return'    : 'Ret'
+'void'      : 't_Void',
+'bool'      : 't_Bool',
+'int'       : 't_Int',
+'char'      : 't_Char',
+'size'      : 't_Size',
+'new'       : 't_New',
+'delete'    : 't_Delete',
+'if'        : 't_If',
+'else'      : 't_Else',
+'for'       : 't_For',
+'while'     : 't_While',
+'return'    : 't_Ret'
 }
 
-literals = [ '+', '-', '*', '/', '(', ')', ';', '!', '<', '>', '^', '%', '[', ']', ',', ':' ]
+literals = [ '+', '-', '*', '/', '(', ')', ';', '!', '<', '>', '^', '%', '{', '}', '[', ']', ',', ':' ]
 
 tokens = [ 'Func', 'BSlash',
 'RealPlus', 'RealMinus', 'RealMul', 'RealDiv', 'Pow', 'BINAND', 'OR',
 'DomEQ', 'LEQ', 'GEQ', 'EQ', 'NOTEQ', 'ASSIGN',
-'Constructor','Const_str','Const_int','Const_float','Const_char', 'Comment', 'MlComment',
+'Constructor','Const_str','Const_int','Const_float','Const_char', 'Comment', 'ccomment',
 'Identifier' ] + list(reserved.values())
 
 # Tokens
 
 t_BINAND         =  r'&&'
 t_OR             =  r'\|\|'
-t_DomEQ          =  r'<>'
 t_LEQ            =  r'<='
 t_GEQ            =  r'>='
 t_EQ             =  r'=='
 t_NOTEQ          =  r'!='
 t_ASSIGN         =  r':='
+
 t_Const_str      =  r'\"([^\\\n]|(\\.))*?\"'
 t_Const_int      =  r'[0-9]+'
-t_Const_float    =  r'[0-9]+\.?[0-9]+([eE][+-]?[0-9]+)?'
-t_Const_char     =  r'\'(\\[nrt0\\\"\']|\\x[0-9a-fA-F]{2}|[^\'\"\\])\''
-t_ignore_Comment =  r'--.*'
+t_Const_char     =  r'\'(\\[nrt0\\\"\']|\\x[0-9a-fA-F]{2}|[a-zA-Z])\''
+t_ignore_Comment =  r'//.*'
 t_ignore         =  " \t"
 
 # Declare the state
 states = (
-    ('mlcomment','exclusive'),
+    ('ccomment','exclusive'),
 )
 
-def t_mlcomment(t):
-    r'\(\*'
+def t_ccomment(t):
+    r'/\*'
     try:
         if t.lexer.level == 0:
             t.lexer.code_start = t.lexer.lexpos         # Record the starting position
             t.lexer.level = 1                           # Initial brace level
-            t.lexer.begin('mlcomment')                  # Enter 'mlcomment' state
+            t.lexer.begin('ccomment')                  # Enter 'ccomment' state
         else:
             t.lexer.level += 1
     except AttributeError:
         t.lexer.code_start = t.lexer.lexpos         # Record the starting position
         t.lexer.level = 1                           # Initial brace level
-        t.lexer.begin('mlcomment')                  # Enter 'mlcomment' state
+        t.lexer.begin('ccomment')                  # Enter 'ccomment' state
 
 # Rules for the comment state
-def t_mlcomment_start(t):
-    r'\(\*'
+def t_ccomment_start(t):
+    r'/\*'
     t.lexer.level +=1
 
-def t_mlcomment_end(t):
-    r'\*\)'
+def t_ccomment_end(t):
+    r'\*/'
     t.lexer.level -=1
 
     # If closing brace, return the comment fragment
@@ -85,29 +85,29 @@ def t_mlcomment_end(t):
          pass
          #return t
 
-def t_mlcomment_anydata(t):
-    r'([^*()]+|\*|\(|\))'
+def t_ccomment_anydata(t):
+    r'([^*//]+|\*|\(|\))'
     t.lexer.lineno += t.value.count("\n")
     pass
 
-def t_mlcomment_lparen(t):
-    r'\('
+def t_ccomment_lparen(t):
+    r'\/'
     pass
 
-def t_mlcomment_rparen(t):
-    r'\)'
+def t_ccomment_rparen(t):
+    r'\/'
     pass
 
 
-def t_mlcomment_newline(t):
+def t_ccomment_newline(t):
     r'\n+'
     t.lexer.lineno += t.value.count("\n")
 
 # Ignored characters (whitespace)
-t_mlcomment_ignore = " \t"
+t_ccomment_ignore = " \t"
 
 # For bad characters, we just skip over it
-def t_mlcomment_error(t):
+def t_ccomment_error(t):
     t.lexer.skip(1)
 
 def t_Reserved(t):
@@ -120,9 +120,5 @@ def t_newline(t):
     t.lexer.lineno += t.value.count("\n")
 
 def t_error(t):
-    if len(argv) > 1:
-        fname = argv[1]
-    else:
-        fname = "stdin"
-    print("%s:%s:%s #> Illegal character '%s'" % (fname, t.lexer.lineno, t.lexpos, t.value[0]))
+    terrors.append(t)
     t.lexer.skip(1)

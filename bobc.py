@@ -2,13 +2,14 @@
 # -*- coding: utf-8
 #
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
-# File Name : main.py
+# File Name : bobc.py
 # Creation Date : 29-03-2012
-# Last Modified : Thu 10 May 2012 07:32:48 PM EEST
+# Last Modified : Thu 10 May 2012 08:24:51 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 from lexer import lexer
 from parser import parser
-from prules import errors
+from prules import perrors
+from tokrules import terrors
 import readline
 from sys import argv,stderr
 from tree import node
@@ -65,7 +66,7 @@ def main():
         data = f.read()
         f.close()
         y = parser.parse(data)
-        if print_errors(errors,data,filename):
+        if print_errors(perrors,data,filename) and print_errors(terrors,data,filename):
             f = open(outfile,"w")
             f.write(sreplace(repr(y),'None',''))
             f.close()
