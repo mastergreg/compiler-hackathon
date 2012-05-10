@@ -4,33 +4,33 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : tokrules.py
 # Creation Date : 29-03-2012
-# Last Modified : Thu 10 May 2012 09:47:14 PM EEST
+# Last Modified : Fri 11 May 2012 12:09:34 AM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 from sys import argv
 terrors = []
 
 reserved = {
-'void'      : 't_Void',
-'bool'      : 't_Bool',
-'int'       : 't_Int',
-'char'      : 't_Char',
-'size'      : 't_Size',
-'new'       : 't_New',
-'delete'    : 't_Delete',
-'if'        : 't_If',
-'else'      : 't_Else',
-'for'       : 't_For',
-'while'     : 't_While',
-'true'      : 't_True',
-'false'     : 't_False',
-'return'    : 't_Ret'
+'void'      : 'Void',
+'bool'      : 'Bool',
+'int'       : 'Int',
+'char'      : 'Char',
+'size'      : 'Size',
+'new'       : 'New',
+'delete'    : 'Delete',
+'if'        : 'If',
+'else'      : 'Else',
+'for'       : 'For',
+'while'     : 'While',
+'true'      : 'True',
+'false'     : 'False',
+'return'    : 'Ret'
 }
 
 literals = [ '+', '-', '*', '/', '(', ')', ';', '!', '<', '>', '^', '%', '{', '}', '[', ']', ',', ':' ]
 
 tokens = [ 'BINAND', 'OR', 'LEQ', 'GEQ', 'EQ', 'NOTEQ', 'ASSIGN',
 'Const_str','Const_int','Const_char', 'Comment', 'ccomment',
-'Identifier' ] + list(reserved.values())
+'Id' ] + list(reserved.values())
 
 # Tokens
 
@@ -113,7 +113,7 @@ def t_ccomment_error(t):
 
 def t_Reserved(t):
     r'[a-zA-Z][a-zA-Z0-9_]*'
-    t.type = reserved.get(t.value,'Identifier')    # Check for reserved words
+    t.type = reserved.get(t.value,'Id')    # Check for reserved words
     return t
 
 def t_newline(t):

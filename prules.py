@@ -4,7 +4,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : parserules.py
 # Creation Date : 02-04-2012
-# Last Modified : Thu 10 May 2012 10:26:53 PM EEST
+# Last Modified : Fri 11 May 2012 12:12:55 AM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
 from tokrules import *
@@ -12,25 +12,6 @@ import ply.yacc as yacc
 from tree import node
 from sys import argv
 perrors = []
-
-precedence = (
-        ('nonassoc', 'Let', 'In'),
-        ('left', ';'),
-        ('nonassoc', 'If', 'Then'),
-        ('nonassoc', 'Else'),
-        ('nonassoc', 'ASSIGN'),
-        ('left', 'OR'),
-        ('left', 'BINAND'),
-        ('nonassoc', '=', 'EQ', 'NOTEQ',  'DomEQ','<', '>', 'LEQ', 'GEQ'),    # Comparisons
-        ('left', '+', '-', 'RealPlus', 'RealMinus' ),                   # + -
-        ('left', '*', '/', 'RealMul', 'RealDiv', 'Mod'),                # * /
-        ('right', 'Pow'),
-        ('right', 'UPLUS', 'UMINUS', 'URPLUS', 'URMINUS', 'UNOT', 'Delete'),                                            # Unary Ops
-        ('nonassoc','EXPR_FUNC'),
-        ('nonassoc', 'UBANG'),
-        ('nonassoc', '[', ']'),
-        ('nonassoc', 'New')
-        )
 
 start = 'program'
 
@@ -77,8 +58,8 @@ def p_program(p):
 
 def p_def(p):
     '''
-    def		: var_def ';'
-		| func_def
+    def     : var_def ';'
+            | func_def
     '''
     p[0] = gen_p_out('def',p)
 
@@ -94,148 +75,147 @@ def p_type(p):
 
 
 def p_ret_type(p):
-	'''
-	ret_type	: void
-			| type
-	'''
-	pass
+    '''
+    ret_type    : Void
+                | type
+    '''
+    pass
 
 def p_simple_type(p):
-	'''
-	simple_type	: bool
-			| int 
-			| char
-	'''
-	pass	
+    '''
+    simple_type : Bool
+                | Int 
+                | Char
+    '''
+    pass    
 
 def p_var_def(p):
-	'''
-	var_def		: type id
-			| type id ':=' expr
-	'''
-    	pass
+    '''
+    var_def     : type Id
+                | type Id ASSIGN expr
+    '''
+    pass
 
 def p_func_def(p):
-	'''
-	func_def	: ret_type id '(' ')' block
-			| ret_type id '(' formal_params ')' block
-	'''
-	pass
+    '''
+    func_def    : ret_type Id '(' ')' block
+                | ret_type Id '(' formal_params ')' block
+    '''
+    pass
 
 def p_formal_params(p):
-	'''
-	formal_params	: type id 
-			| type id rep_formal_params
-	'''
-	pass
+    '''
+    formal_params   : type Id 
+                    | type Id rep_formal_params
+    '''
+    pass
 
 def p_rep_formal_params(p):
-	'''
-	rep_formal_params	: empty
-				| ','  type id rep_formal_params
-	'''
-	pass
+    '''
+    rep_formal_params   : empty
+                        | ','  type Id rep_formal_params
+    '''
+    pass
 
 def p_actual_params(p):
-	'''
-	actual_params	: expr
-			| expr rep_actual_params
-	'''
-	pass
+    '''
+    actual_params   : expr
+                    | expr rep_actual_params
+    '''
+    pass
 
 def p_rep_actual_params(p):
-	'''
-	rep_actual_params	: empty
-				| ',' expr rep_actual_params
-	'''
-	pass
+    '''
+    rep_actual_params   : empty
+                        | ',' expr rep_actual_params
+    '''
+    pass
 
 
 def p_block(p):
-	'''
-	block		: '{' '}'
-			| '{' stmt_list '}'
-	'''
-	pass
+    '''
+    block       : '{' '}'
+                | '{' stmt_list '}'
+    '''
+    pass
 
 
 def p_stmtm_list(p):
-	'''
-	stmt_list	: stmt ';'
-			| stmt ';' stmt_list
-	'''
-	pass
+    '''
+    stmt_list   : stmt ';'
+                | stmt ';' stmt_list
+    '''
+    pass
 
 def p_stmt(p):
-	'''
-	smtm		: var_def
-			| id ':=' expr
-			| 'if' '(' expr ')'  stmt
-			| 'if' '(' expr ')'  stmt 'else' stmt
-			| 'for' '(' var_def ';' expr ';' stmt ')' stmt
-			| 'while' '(' expr ')' stmt
-			| expr
-			| block
-			| 'delete' id
-			| 'return' expr
-	'''
-	pass
+    '''
+    stmt    : var_def
+            | Id ASSIGN expr
+            | If '(' expr ')'  stmt
+            | If '(' expr ')'  stmt Else stmt
+            | For '(' var_def ';' expr ';' stmt ')' stmt
+            | While '(' expr ')' stmt
+            | expr
+            | block
+            | Delete Id
+            | Ret expr
+    '''
+    pass
 
 
 def p_expr(p):
-	'''
-	expr 	: lval
-		| id '(' ')'
-		| id '(' actual_params ')'
-		| id ':=' expr
-		| 'new' type '[' expr ']'
-		| 'size' expr 
-		| expr bin_op expr
-		| un_op expr
-		| expr bin_op expr
-		| un_op expr
-		| expr '[' expr ']'
-		| int_literal 
-		| boll_literal
-		| char_literal
-		| string_literal
+    '''
+    expr    : lval
+            | Id '(' ')'
+            | Id '(' actual_params ')'
+            | Id ASSIGN expr
+            | New type '[' expr ']'
+            | Size expr 
+            | un_op expr
+            | expr bin_op expr
+            | expr '[' expr ']'
+            | Const_int
+            | Const_char
+            | Const_str
+            | True
+            | False
 
-	'''
-	pass
-	
+    '''
+    pass
+    
 
 def p_bin_op(p):
-	'''
-	bin_op		: '+'
-			| '-'
-			| '*'
-			| '/'
-			| '%'
-			| '==
-			| '!=
-			| '>'
-			| '<'
-			| '>=
-			| '<=
-			| '&&
-			| '||
-			| '^'
-	'''
-	pass
+    '''
+    bin_op      : '+'
+                | '-'
+                | '*'
+                | '/'
+                | '%'
+                | EQ
+                | NOTEQ
+                | '>'
+                | '<'
+                | GEQ
+                | LEQ
+                | BINAND
+                | OR
+                | '^'
+    '''
+    pass
 
 def p_un_op(p):
-	'''
-	un_op		: '!'
-			| '-'
-			| '+'
-	'''
-	pass
+    '''
+    un_op       : '!'
+                | '-'
+                | '+'
+    '''
+    pass
 
 def p_lval(p):
-	'''
-	p_lval		: id
-			| id '[' expr ']'
-	'''
-	pass
+    '''
+    lval      : Id
+            | Id '[' expr ']'
+    '''
+    pass
 
-	
+    
