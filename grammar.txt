@@ -1,0 +1,59 @@
+<type> ::= <simple-type> | <simple-type> '[' ']'
+<ret-type> ::= 'void' | <type>
+<simple-type> ::= 'bool' | 'int' | 'char'
+
+<var-def> ::= <type> <id> (':=' <expr>)?
+
+<func-def> ::= <ret-type> <id> '(' (<formal-params>)? ')' <block>
+
+<formal-params> ::= <type> <id> (',' <type> <id>)*
+
+<actual-params> ::= <expr> (',' <expr>)*
+
+<block> ::= '{' (<stmt-list>)? '}'
+<stmt-list> ::= <stmt> ';' | <stmt> ';' <stmt-list>
+<stmt> ::= <var-def>
+         | <id> ':=' <expr>
+         | 'if' '(' <expr> ')' <stmt> ('else' <stmt>)?
+         | 'for' '(' <var-def> ';' <expr> ';' <stmt> ')' <stmt>
+         | 'while' '(' <expr> ')' <stmt>
+         | <expr>
+         | <block>
+         | 'delete' id
+         | 'return' <expr>
+
+<expr> ::= <id> '(' <actual-params> ')'        
+         | 'new' <type> '[' <expr> ']'
+         | 'size' <expr>   // Arrays will have their size builtin __size in lib
+         | <expr> <bin-op> <expr>
+         | <un-op> <expr>
+         | <expr> '[' <expr> ']'
+         
+<bin-op> ::= '+' | '-' | '*' | '/' | '%' | '==' | '!='
+           | '>' | '<' | '>=' | '<=" | '&&' | '||' | '^'
+<un-op>  ::= '!' | '-' | '+'
+
+Standard Lib
+============
+char chr(int x);
+int ord(char c);
+char[] readLine();
+void print(char[] str);
+int string_to_int(char[] str);
+char[] int_to_string(int x);
+char[] strcpy(char[] str);
+int strcmp(char[] str1, char[] str2);
+char[] strcat(char[] str1, char[] str2);
+int strlen(char[] str); // strlen(str) < __size(str)
+
+TODO
+====
+* Check array-bounds (or maybe not? GOOD LUCK!)
+* Null-terminated strings ("\0") for cc
+
+Fuzzy things - Ask nickie
+=========================
+* No special care for Calling conv, right?
+* Handle array size? Store size in {arr[], size} is enough?
+  Nickie: Store in Heap as first word.
+* Stdlib is OK?
