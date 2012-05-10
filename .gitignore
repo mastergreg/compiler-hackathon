@@ -1,0 +1,7 @@
+*.swp
+*.so
+*.pyc
+*.pyo
+local
+*tab.py
+*.out
