@@ -4,7 +4,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : parserules.py
 # Creation Date : 02-04-2012
-# Last Modified : Fri 11 May 2012 12:21:39 AM EEST
+# Last Modified : Fri 11 May 2012 01:23:07 AM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
 from tokrules import *
@@ -12,6 +12,23 @@ import ply.yacc as yacc
 from tree import node
 from sys import argv
 perrors = []
+
+
+
+precedence = (  ('nonassoc','If'),
+                ('nonassoc','Else'),
+                ('nonassoc',','),
+                ('right','ASSIGN'),
+                ('left','OR'),
+                ('left','^'),
+                ('left','BINAND'),
+                ('left','EQ','NOTEQ'),
+                ('left','>','<','LEQ','GEQ'),
+                ('left','+','-'),
+                ('left','*','/','%'),
+                ('nonassoc','UNAR','Size'),
+                ('nonassoc','[',']','(',')')
+            )
 
 start = 'program'
 
@@ -105,8 +122,7 @@ def p_func_def(p):
 
 def p_formal_params(p):
     '''
-    formal_params   : type Id 
-                    | type Id rep_formal_params
+    formal_params   : type Id rep_formal_params
     '''
     pass
 
@@ -119,8 +135,7 @@ def p_rep_formal_params(p):
 
 def p_actual_params(p):
     '''
-    actual_params   : expr
-                    | expr rep_actual_params
+    actual_params   : expr rep_actual_params
     '''
     pass
 
@@ -150,7 +165,6 @@ def p_stmtm_list(p):
 def p_stmt(p):
     '''
     stmt    : var_def
-            | Id ASSIGN expr
             | If '(' expr ')'  stmt
             | If '(' expr ')'  stmt Else stmt
             | For '(' var_def ';' expr ';' stmt ')' stmt
@@ -163,51 +177,48 @@ def p_stmt(p):
     pass
 
 
+def p_expr_atom(p):
+    '''
+    expr_atom   : lval 
+                | Size expr_atom
+                | New type '[' expr ']'
+                | Const_int
+                | Const_char
+                | Const_str
+                | True
+                | False
+                | Id '(' ')'
+                | Id '(' actual_params ')'
+                | Id ASSIGN expr
+    '''
+
 def p_expr(p):
     '''
-    expr    : lval
-            | Id '(' ')'
-            | Id '(' actual_params ')'
-            | Id ASSIGN expr
-            | New type '[' expr ']'
-            | Size expr 
-            | un_op expr
-            | expr bin_op expr
-            | expr '[' expr ']'
-            | Const_int
-            | Const_char
-            | Const_str
-            | True
-            | False
+    expr    : expr_atom 
+            | expr  '+'    expr
+            | expr  '-'    expr
+            | expr  '*'    expr
+            | expr  '/'    expr
+            | expr  '%'    expr
+            | expr  EQ     expr
+            | expr  NOTEQ  expr
+            | expr  '>'    expr
+            | expr  '<'    expr
+            | expr  GEQ    expr
+            | expr  LEQ    expr
+            | expr  BINAND expr
+            | expr  OR     expr
+            | expr  '^'    expr
 
     '''
     pass
     
 
-def p_bin_op(p):
-    '''
-    bin_op      : '+'
-                | '-'
-                | '*'
-                | '/'
-                | '%'
-                | EQ
-                | NOTEQ
-                | '>'
-                | '<'
-                | GEQ
-                | LEQ
-                | BINAND
-                | OR
-                | '^'
-    '''
-    pass
-
 def p_un_op(p):
     '''
-    un_op       : '!'
-                | '-'
-                | '+'
+    expr        : '!' expr %prec UNAR
+                | '-' expr %prec UNAR
+                | '+' expr %prec UNAR
     '''
     pass
 
