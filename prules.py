@@ -4,7 +4,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : parserules.py
 # Creation Date : 02-04-2012
-# Last Modified : Thu 10 May 2012 08:26:24 PM EEST
+# Last Modified : Thu 10 May 2012 10:26:53 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
 from tokrules import *
@@ -65,6 +65,23 @@ def p_error(p):
         yacc.restart()
     else:
         errors.append(p)
+
+
+
+
+def p_type(p):
+    '''
+    type    :   simple_type
+            |   simple_type '[' ']'
+    '''
+    #p[0] = gen_p_out('type',p)
+    pass
+    
+
+
+def p_ret_type(p):
+
+
 
 def p_program(p):
     '''

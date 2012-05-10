@@ -4,7 +4,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : tokrules.py
 # Creation Date : 29-03-2012
-# Last Modified : Thu 10 May 2012 08:26:12 PM EEST
+# Last Modified : Thu 10 May 2012 09:47:14 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 from sys import argv
 terrors = []
@@ -21,15 +21,15 @@ reserved = {
 'else'      : 't_Else',
 'for'       : 't_For',
 'while'     : 't_While',
+'true'      : 't_True',
+'false'     : 't_False',
 'return'    : 't_Ret'
 }
 
 literals = [ '+', '-', '*', '/', '(', ')', ';', '!', '<', '>', '^', '%', '{', '}', '[', ']', ',', ':' ]
 
-tokens = [ 'Func', 'BSlash',
-'RealPlus', 'RealMinus', 'RealMul', 'RealDiv', 'Pow', 'BINAND', 'OR',
-'DomEQ', 'LEQ', 'GEQ', 'EQ', 'NOTEQ', 'ASSIGN',
-'Constructor','Const_str','Const_int','Const_float','Const_char', 'Comment', 'ccomment',
+tokens = [ 'BINAND', 'OR', 'LEQ', 'GEQ', 'EQ', 'NOTEQ', 'ASSIGN',
+'Const_str','Const_int','Const_char', 'Comment', 'ccomment',
 'Identifier' ] + list(reserved.values())
 
 # Tokens
@@ -43,6 +43,7 @@ t_NOTEQ          =  r'!='
 t_ASSIGN         =  r':='
 
 t_Const_str      =  r'\"([^\\\n]|(\\.))*?\"'
+#t_Const_str      =  r'[a-zA-Z_]?\"(\\.|[^\\"])*\"'
 t_Const_int      =  r'[0-9]+'
 t_Const_char     =  r'\'(\\[nrt0\\\"\']|\\x[0-9a-fA-F]{2}|[a-zA-Z])\''
 t_ignore_Comment =  r'//.*'
@@ -111,7 +112,7 @@ def t_ccomment_error(t):
     t.lexer.skip(1)
 
 def t_Reserved(t):
-    r'[a-z][a-zA-Z0-9_]*'
+    r'[a-zA-Z][a-zA-Z0-9_]*'
     t.type = reserved.get(t.value,'Identifier')    # Check for reserved words
     return t
 

@@ -4,7 +4,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : lexer.py
 # Creation Date : 21-03-2012
-# Last Modified : Thu 10 May 2012 07:32:48 PM EEST
+# Last Modified : Thu 10 May 2012 09:03:45 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
 # Build the lexer
@@ -25,7 +25,7 @@ def main():
                 if not tok: 
                     break
                 #uncomment to print tokens
-                #print tok
+                print tok
     else:
         print "No input given"
         exit(-1)
