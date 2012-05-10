@@ -4,7 +4,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : parserules.py
 # Creation Date : 02-04-2012
-# Last Modified : Fri 11 May 2012 12:12:55 AM EEST
+# Last Modified : Fri 11 May 2012 12:21:39 AM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
 from tokrules import *
@@ -213,7 +213,7 @@ def p_un_op(p):
 
 def p_lval(p):
     '''
-    lval      : Id
+    lval    : Id
             | Id '[' expr ']'
     '''
     pass
