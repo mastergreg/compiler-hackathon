@@ -4,9 +4,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : parserules.py
 # Creation Date : 02-04-2012
-# Last Modified : Thu 10 May 2012 12:42:04 PM EEST
-# Created By : Greg Liras <gregliras@gmail.com>
-# Created By : Vasilis Gerakaris <vgerak@gmail.com>
+# Last Modified : Thu 10 May 2012 07:32:48 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
 from tokrules import *

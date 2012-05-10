@@ -4,9 +4,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : parser.py
 # Creation Date : 21-03-2012
-# Last Modified : Mon 30 Apr 2012 05:23:37 PM EEST
-# Created By : Greg Liras <gregliras@gmail.com>
-# Created By : Vasilis Gerakaris <vgerak@gmail.com>
+# Last Modified : Thu 10 May 2012 07:32:48 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
 # Build the lexer

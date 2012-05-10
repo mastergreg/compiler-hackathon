@@ -4,9 +4,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : main.py
 # Creation Date : 29-03-2012
-# Last Modified : Thu 10 May 2012 07:06:42 PM EEST
-# Created By : Greg Liras <gregliras@gmail.com>
-# Created By : Vasilis Gerakaris <vgerak@gmail.com>
+# Last Modified : Thu 10 May 2012 07:32:48 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 from lexer import lexer
 from parser import parser

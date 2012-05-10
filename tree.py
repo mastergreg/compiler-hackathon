@@ -4,8 +4,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : tree.py
 # Creation Date : 26-04-2012
-# Last Modified : Thu 10 May 2012 12:40:20 PM EEST
-# Created By : Greg Liras <gregliras@gmail.com>
+# Last Modified : Thu 10 May 2012 07:32:48 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
 def fixme(stuff):
