@@ -4,7 +4,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : tokrules.py
 # Creation Date : 29-03-2012
-# Last Modified : Thu 10 May 2012 06:29:06 PM EEST
+# Last Modified : Thu 10 May 2012 07:27:49 PM EEST
 # Created By : Greg Liras <gregliras@gmail.com>
 # Created By : Vasilis Gerakaris <vgerak@gmail.com>
 #_._._._._._._._._._._._._._._._._._._._._.*/
@@ -81,7 +81,7 @@ def t_mlcomment_end(t):
     # If closing brace, return the comment fragment
     if t.lexer.level == 0:
          t.value = t.lexer.lexdata[t.lexer.code_start:t.lexer.lexpos+1]
-         t.type = "MlComment"
+         t.type = "ccomment"
          t.lexer.lineno += t.value.count('\n')
          t.lexer.begin('INITIAL')
          pass
