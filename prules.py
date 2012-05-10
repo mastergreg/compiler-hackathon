@@ -182,3 +182,60 @@ def p_stmt(p):
 	pass
 
 
+def p_expr(p):
+	'''
+	expr 	: lval
+		| id '(' ')'
+		| id '(' actual_params ')'
+		| id ':=' expr
+		| 'new' type '[' expr ']'
+		| 'size' expr 
+		| expr bin_op expr
+		| un_op expr
+		| expr bin_op expr
+		| un_op expr
+		| expr '[' expr ']'
+		| int_literal 
+		| boll_literal
+		| char_literal
+		| string_literal
+
+	'''
+	pass
+	
+
+def p_bin_op(p):
+	'''
+	bin_op		: '+'
+			| '-'
+			| '*'
+			| '/'
+			| '%'
+			| '==
+			| '!=
+			| '>'
+			| '<'
+			| '>=
+			| '<=
+			| '&&
+			| '||
+			| '^'
+	'''
+	pass
+
+def p_un_op(p):
+	'''
+	un_op		: '!'
+			| '-'
+			| '+'
+	'''
+	pass
+
+def p_lval(p):
+	'''
+	p_lval		: id
+			| id '[' expr ']'
+	'''
+	pass
+
+	
