@@ -1,37 +1,48 @@
+<program> ::= <def> <program> | <def>
+<def> ::= <var-def> ';' | <func-def>
+
 <type> ::= <simple-type> | <simple-type> '[' ']'
 <ret-type> ::= 'void' | <type>
 <simple-type> ::= 'bool' | 'int' | 'char'
 
 <var-def> ::= <type> <id> (':=' <expr>)?
-
 <func-def> ::= <ret-type> <id> '(' (<formal-params>)? ')' <block>
 
 <formal-params> ::= <type> <id> (',' <type> <id>)*
-
 <actual-params> ::= <expr> (',' <expr>)*
 
 <block> ::= '{' (<stmt-list>)? '}'
-<stmt-list> ::= <stmt> ';' | <stmt> ';' <stmt-list>
+<stmt-list> ::= <stmt> | <stmt> <stmt-list>
 <stmt> ::= <var-def>
-         | <id> ':=' <expr>
          | 'if' '(' <expr> ')' <stmt> ('else' <stmt>)?
-         | 'for' '(' <var-def> ';' <expr> ';' <stmt> ')' <stmt>
+         | 'for' '(' <var-def> ';' <expr> ';' <expr> ')' <stmt>
          | 'while' '(' <expr> ')' <stmt>
-         | <expr>
+         | <expr> ';'
          | <block>
-         | 'delete' id
-         | 'return' <expr>
+         | 'delete' expr ';'
+         | 'return' (<expr>)? ';'
 
-<expr> ::= <id> '(' <actual-params> ')'        
+<expr> ::= <lval>
+         | <id> '(' (<actual-params>)? ')'
+         | <id> ':=' <expr>
          | 'new' <type> '[' <expr> ']'
          | 'size' <expr>   // Arrays will have their size builtin __size in lib
          | <expr> <bin-op> <expr>
          | <un-op> <expr>
-         | <expr> '[' <expr> ']'
+         | <expr> '[' <expr> ']'  // Array indexing
+         | <int-literal> | <bool-literal> | <char-literal> | <string-literal>
          
 <bin-op> ::= '+' | '-' | '*' | '/' | '%' | '==' | '!='
            | '>' | '<' | '>=' | '<=" | '&&' | '||' | '^'
 <un-op>  ::= '!' | '-' | '+'
+
+<lval> ::= <id>
+         | <id> '[' <expr> ']'
+
+<int-literal> ::= [0-9]+
+<char-literal> ::= as in C
+<string-literal> ::= as in C
+<bool-literal> ::= 'true' | 'false'
 
 Standard Lib
 ============
