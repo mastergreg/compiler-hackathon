@@ -224,7 +224,7 @@ def p_bin_op_int(p):
             | expr  '/'    expr
             | expr  '%'    expr
     '''
-    p[0] = gen_p_out('binop',p,symbol=p[2])
+    p[0] = gen_p_out('binop',p,symbol=p[2], ptype='int')
 
 def p_bin_op_bool(p):
     '''
@@ -238,15 +238,20 @@ def p_bin_op_bool(p):
             | expr  OR     expr
             | expr  '^'    expr
     '''
-    p[0] = gen_p_out('binop',p,symbol=p[2])
+    p[0] = gen_p_out('binop',p,symbol=p[2], ptype='bool')
 
     
 
 def p_un_op(p):
     '''
     expr        : '!' expr %prec UNAR
+    '''
+    p[0] = gen_p_out('unop', p.symbol=p[1], ptype='bool')
+
+def p_un_op(p):
+    '''
                 | '-' expr %prec UNAR
                 | '+' expr %prec UNAR
     '''
-    p[0] = gen_p_out('unop',p,symbol=p[1])
+    p[0] = gen_p_out('unop',p,symbol=p[1], ptype='int')
 
