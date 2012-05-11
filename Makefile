@@ -10,4 +10,4 @@ $(TARGET): $(TARGET).bob
 	$(CC) -o $@ $<
 	
 clean:
-	rm *.pyc *.out *tab.py $(TARGET)
+	rm *.pyc *.out *tab.py $(TARGET).xml

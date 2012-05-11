@@ -3,7 +3,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : parserules.py
 # Creation Date : 02-04-2012
-# Last Modified : Fri 11 May 2012 05:40:05 PM EEST
+# Last Modified : Fri 11 May 2012 06:09:30 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
 from tokrules import *
@@ -36,7 +36,8 @@ def gen_p_out(ptype,p,symbol=None):
     children = []
     for i in p[1:]:
         children.append(i)
-    return node(ptype, {'symbol':symbol,'title':ptype}, children)
+    r = node(ptype, {'symbol':symbol,'title':ptype}, children)
+    return r
 
 
 def p_empty(p):
@@ -63,9 +64,20 @@ def p_program(p):
 def p_def(p):
     '''
     def     : var_def ';'
-            | func_def
+            | Void Id '(' ')' block
+            | Void Id '(' formal_params ')' block
+            | type Id '(' ')' block
+            | type Id '(' formal_params ')' block
     '''
     p[0] = gen_p_out('def',p)
+
+
+def p_var_def(p):
+    '''
+    var_def     : type Id
+                | type Id ASSIGN expr
+    '''
+    p[0] = gen_p_out('var_def',p)
 
 
 def p_type(p):
@@ -76,35 +88,14 @@ def p_type(p):
     p[0] = gen_p_out('type',p)
     
 
-
-def p_ret_type(p):
-    '''
-    ret_type    : Void
-                | type
-    '''
-    p[0] = gen_p_out('ret_type',p)
-
 def p_simple_type(p):
     '''
     simple_type : Bool
                 | Int 
                 | Char
     '''
-    p[0] = gen_p_out('ret_type',p)
+    p[0] = gen_p_out('simple_type',p)
 
-def p_var_def(p):
-    '''
-    var_def     : type Id
-                | type Id ASSIGN expr
-    '''
-    p[0] = gen_p_out('Generic',p)
-
-def p_func_def(p):
-    '''
-    func_def    : ret_type Id '(' ')' block
-                | ret_type Id '(' formal_params ')' block
-    '''
-    p[0] = gen_p_out('Generic',p)
 
 def p_formal_params(p):
     '''
@@ -150,15 +141,15 @@ def p_block(p):
     block       : '{' '}'
                 | '{' stmt_list '}'
     '''
-    p[0] = gen_p_out('Generic',p)
+    p[0] = gen_p_out('block',p)
 
 
-def p_stmtm_list(p):
+def p_stmt_list(p):
     '''
     stmt_list   : stmt ';'
                 | stmt ';' stmt_list
     '''
-    p[0] = gen_p_out('Generic',p)
+    p[0] = gen_p_out('stmt_list',p)
 
 def p_stmt(p):
     '''
@@ -176,25 +167,20 @@ def p_stmt(p):
     p[0] = gen_p_out('stmt',p)
 
 
-def p_expr_atom(p):
-    '''
-    expr_atom   : lval 
-                | Size expr_atom
-                | New type '[' expr ']'
-                | Const_int
-                | Const_char
-                | Const_str
-                | True
-                | False
-                | Id '(' ')'
-                | Id '(' actual_params ')'
-                | Id ASSIGN expr
-    '''
-    p[0] = gen_p_out('expr_atom',p)
-
 def p_expr(p):
     '''
-    expr    : expr_atom 
+    expr    : Id
+            | expr '[' expr ']'
+            | Id '(' ')'
+            | Id '(' actual_params ')'
+            | New simple_type '[' expr ']'
+            | Size expr
+            | Const_int
+            | Const_char
+            | Const_str
+            | True
+            | False
+            | expr  ASSIGN expr
             | expr  '+'    expr
             | expr  '-'    expr
             | expr  '*'    expr
@@ -211,7 +197,7 @@ def p_expr(p):
             | expr  '^'    expr
 
     '''
-    p[0] = gen_p_out('Generic',p)
+    p[0] = gen_p_out('expr',p)
     
 
 def p_un_op(p):
@@ -222,11 +208,3 @@ def p_un_op(p):
     '''
     p[0] = gen_p_out('Generic',p)
 
-def p_lval(p):
-    '''
-    lval    : Id
-            | Id '[' expr ']'
-    '''
-    p[0] = gen_p_out('Generic',p)
-
-    
