@@ -4,7 +4,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : tree.py
 # Creation Date : 26-04-2012
-# Last Modified : Thu 10 May 2012 07:32:48 PM EEST
+# Last Modified : Fri 11 May 2012 07:26:13 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
 def fixme(stuff):
@@ -27,6 +27,7 @@ class node(object):
         kids = "".join(map(repr,self._children))
         kids = filter(lambda x: repr(x) != 'None',kids)
         return "<{0} {1}>\n{2}</{0}>\n".format(self._name,self._attrsShow,kids)
+        #return "{0}: {1}\n\t{2}".format(self._name,self._attrsShow,self._children)
     def __iter__(self):
         return iter(self._children)
     def sumbol(self):
