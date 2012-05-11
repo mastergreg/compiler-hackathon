@@ -1,1 +1,262 @@
-None
+<program  symbol="None" title="program">
+<def  symbol="None" title="def">
+'void''main''('')'<block  symbol="None" title="block">
+'{'<stmt_list  symbol="None" title="stmt_list">
+<stmt  symbol="None" title="stmt">
+<var_def  symbol="None" title="var_def">
+<type  symbol="None" title="type">
+<simple_type  symbol="None" title="simple_type">
+'int'</simple_type>
+</type>
+'numberOfRings'</var_def>
+';'</stmt>
+<stmt_list  symbol="None" title="stmt_list">
+<stmt  symbol="None" title="stmt">
+<expr  symbol="None" title="expr">
+'print''('<actual_params  symbol="None" title="actual_params">
+<expr  symbol="None" title="expr">
+'"Number of rigns: "'</expr>
+None</actual_params>
+')'</expr>
+';'</stmt>
+<stmt_list  symbol="None" title="stmt_list">
+<stmt  symbol="None" title="stmt">
+<var_def  symbol="None" title="var_def">
+<type  symbol="None" title="type">
+<simple_type  symbol="None" title="simple_type">
+'char'</simple_type>
+</type>
+'line'':='<expr  symbol="None" title="expr">
+'readLine''('')'</expr>
+</var_def>
+';'</stmt>
+<stmt_list  symbol="None" title="stmt_list">
+<stmt  symbol="None" title="stmt">
+<expr  symbol="None" title="expr">
+<expr  symbol="None" title="expr">
+'numberOfRings'</expr>
+':='<expr  symbol="None" title="expr">
+'string_to_int''('<actual_params  symbol="None" title="actual_params">
+<expr  symbol="None" title="expr">
+'line'</expr>
+None</actual_params>
+')'</expr>
+</expr>
+';'</stmt>
+<stmt_list  symbol="None" title="stmt_list">
+<stmt  symbol="None" title="stmt">
+<expr  symbol="None" title="expr">
+'print''('<actual_params  symbol="None" title="actual_params">
+<expr  symbol="None" title="expr">
+'"\\nHere is the solution:\\n\\n"'</expr>
+None</actual_params>
+')'</expr>
+';'</stmt>
+<stmt_list  symbol="None" title="stmt_list">
+<stmt  symbol="None" title="stmt">
+<expr  symbol="None" title="expr">
+'hanoi''('<actual_params  symbol="None" title="actual_params">
+<expr  symbol="None" title="expr">
+'"left"'</expr>
+<params  symbol="None" title="params">
+','<expr  symbol="None" title="expr">
+'"right"'</expr>
+<params  symbol="None" title="params">
+','<expr  symbol="None" title="expr">
+'"middle"'</expr>
+<params  symbol="None" title="params">
+','<expr  symbol="None" title="expr">
+'numberOfRings'</expr>
+None</params>
+</params>
+</params>
+</actual_params>
+')'</expr>
+';'</stmt>
+</stmt_list>
+</stmt_list>
+</stmt_list>
+</stmt_list>
+</stmt_list>
+</stmt_list>
+'}'</block>
+</def>
+<program  symbol="None" title="program">
+<def  symbol="None" title="def">
+'void''move''('<formal_params  symbol="None" title="formal_params">
+<type  symbol="None" title="type">
+<simple_type  symbol="None" title="simple_type">
+'char'</simple_type>
+'['']'</type>
+'source'<formal_params  symbol="None" title="formal_params">
+','<type  symbol="None" title="type">
+<simple_type  symbol="None" title="simple_type">
+'char'</simple_type>
+'['']'</type>
+'target'None</formal_params>
+</formal_params>
+')'<block  symbol="None" title="block">
+'{'<stmt_list  symbol="None" title="stmt_list">
+<stmt  symbol="None" title="stmt">
+<expr  symbol="None" title="expr">
+'print''('<actual_params  symbol="None" title="actual_params">
+<expr  symbol="None" title="expr">
+'"Move from "'</expr>
+None</actual_params>
+')'</expr>
+';'</stmt>
+<stmt_list  symbol="None" title="stmt_list">
+<stmt  symbol="None" title="stmt">
+<expr  symbol="None" title="expr">
+'print''('<actual_params  symbol="None" title="actual_params">
+<expr  symbol="None" title="expr">
+'source'</expr>
+None</actual_params>
+')'</expr>
+';'</stmt>
+<stmt_list  symbol="None" title="stmt_list">
+<stmt  symbol="None" title="stmt">
+<expr  symbol="None" title="expr">
+'print''('<actual_params  symbol="None" title="actual_params">
+<expr  symbol="None" title="expr">
+'" to "'</expr>
+None</actual_params>
+')'</expr>
+';'</stmt>
+<stmt_list  symbol="None" title="stmt_list">
+<stmt  symbol="None" title="stmt">
+<expr  symbol="None" title="expr">
+'print''('<actual_params  symbol="None" title="actual_params">
+<expr  symbol="None" title="expr">
+'target'</expr>
+None</actual_params>
+')'</expr>
+';'</stmt>
+<stmt_list  symbol="None" title="stmt_list">
+<stmt  symbol="None" title="stmt">
+<expr  symbol="None" title="expr">
+'print''('<actual_params  symbol="None" title="actual_params">
+<expr  symbol="None" title="expr">
+'",\\n"'</expr>
+None</actual_params>
+')'</expr>
+';'</stmt>
+</stmt_list>
+</stmt_list>
+</stmt_list>
+</stmt_list>
+</stmt_list>
+'}'</block>
+</def>
+<program  symbol="None" title="program">
+<def  symbol="None" title="def">
+'void''hanoi''('<formal_params  symbol="None" title="formal_params">
+<type  symbol="None" title="type">
+<simple_type  symbol="None" title="simple_type">
+'char'</simple_type>
+'['']'</type>
+'source'<formal_params  symbol="None" title="formal_params">
+','<type  symbol="None" title="type">
+<simple_type  symbol="None" title="simple_type">
+'char'</simple_type>
+'['']'</type>
+'target'<formal_params  symbol="None" title="formal_params">
+','<type  symbol="None" title="type">
+<simple_type  symbol="None" title="simple_type">
+'char'</simple_type>
+'['']'</type>
+'aux'<formal_params  symbol="None" title="formal_params">
+','<type  symbol="None" title="type">
+<simple_type  symbol="None" title="simple_type">
+'int'</simple_type>
+</type>
+'rings'None</formal_params>
+</formal_params>
+</formal_params>
+</formal_params>
+')'<block  symbol="None" title="block">
+'{'<stmt_list  symbol="None" title="stmt_list">
+<stmt  symbol="None" title="stmt">
+'if''('<expr  symbol="None" title="expr">
+<expr  symbol="None" title="expr">
+'rings'</expr>
+'>='<expr  symbol="None" title="expr">
+'1'</expr>
+</expr>
+')'<stmt  symbol="None" title="stmt">
+<block  symbol="None" title="block">
+'{'<stmt_list  symbol="None" title="stmt_list">
+<stmt  symbol="None" title="stmt">
+<expr  symbol="None" title="expr">
+'hanoi''('<actual_params  symbol="None" title="actual_params">
+<expr  symbol="None" title="expr">
+'source'</expr>
+<params  symbol="None" title="params">
+','<expr  symbol="None" title="expr">
+'aux'</expr>
+<params  symbol="None" title="params">
+','<expr  symbol="None" title="expr">
+'target'</expr>
+<params  symbol="None" title="params">
+','<expr  symbol="None" title="expr">
+<expr  symbol="None" title="expr">
+'rigns'</expr>
+'-'<expr  symbol="None" title="expr">
+'1'</expr>
+</expr>
+None</params>
+</params>
+</params>
+</actual_params>
+')'</expr>
+';'</stmt>
+<stmt_list  symbol="None" title="stmt_list">
+<stmt  symbol="None" title="stmt">
+<expr  symbol="None" title="expr">
+'move''('<actual_params  symbol="None" title="actual_params">
+<expr  symbol="None" title="expr">
+'source'</expr>
+<params  symbol="None" title="params">
+','<expr  symbol="None" title="expr">
+'target'</expr>
+None</params>
+</actual_params>
+')'</expr>
+';'</stmt>
+<stmt_list  symbol="None" title="stmt_list">
+<stmt  symbol="None" title="stmt">
+<expr  symbol="None" title="expr">
+'hanoi''('<actual_params  symbol="None" title="actual_params">
+<expr  symbol="None" title="expr">
+'aux'</expr>
+<params  symbol="None" title="params">
+','<expr  symbol="None" title="expr">
+'target'</expr>
+<params  symbol="None" title="params">
+','<expr  symbol="None" title="expr">
+'source'</expr>
+<params  symbol="None" title="params">
+','<expr  symbol="None" title="expr">
+<expr  symbol="None" title="expr">
+'rings'</expr>
+'-'<expr  symbol="None" title="expr">
+'1'</expr>
+</expr>
+None</params>
+</params>
+</params>
+</actual_params>
+')'</expr>
+';'</stmt>
+</stmt_list>
+</stmt_list>
+</stmt_list>
+'}'</block>
+</stmt>
+</stmt>
+</stmt_list>
+'}'</block>
+</def>
+</program>
+</program>
+</program>

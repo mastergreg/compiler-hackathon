@@ -4,12 +4,13 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : error_handler.py
 # Creation Date : 11-05-2012
-# Last Modified : Fri 11 May 2012 05:40:54 PM EEST
+# Last Modified : Fri 11 May 2012 06:27:40 PM EEST
 # Created By : Greg Liras <gregliras@gmail.com>
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
 from sys import stderr
 from tree import node
+from string import replace as sreplace
 
 def main():
     eit(0)

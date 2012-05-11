@@ -3,7 +3,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : parserules.py
 # Creation Date : 02-04-2012
-# Last Modified : Fri 11 May 2012 06:21:36 PM EEST
+# Last Modified : Fri 11 May 2012 06:50:18 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
 from tokrules import *
@@ -37,7 +37,6 @@ def gen_p_out(ptype,p,symbol=None):
     for i in p[1:]:
         children.append(i)
     r = node(ptype, {'symbol':symbol,'title':ptype}, children)
-    print r
     return r
 
 
@@ -52,6 +51,7 @@ def p_error(p):
         yacc.restart()
     else:
         perrors.append(p)
+    print p, "error"
 
 
 def p_program(p):
@@ -147,14 +147,14 @@ def p_block(p):
 
 def p_stmt_list(p):
     '''
-    stmt_list   : stmt ';'
-                | stmt ';' stmt_list
+    stmt_list   : stmt 
+                | stmt stmt_list
     '''
     p[0] = gen_p_out('stmt_list',p)
 
 def p_stmt(p):
     '''
-    stmt    : var_def
+    stmt    : var_def ';'
             | If '(' expr ')'  stmt
             | If '(' expr ')'  stmt Else stmt
             | For '(' var_def ';' expr ';' stmt ')' stmt

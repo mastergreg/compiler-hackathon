@@ -1,4 +1,1 @@
-void main()
-{
-    print("hello world\n");
-}
+void main( )  { print ( "hello world" ); }
