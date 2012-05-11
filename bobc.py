@@ -4,59 +4,27 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : bobc.py
 # Creation Date : 29-03-2012
-# Last Modified : Thu 10 May 2012 08:24:51 PM EEST
+# Last Modified : Fri 11 May 2012 11:32:47 AM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 from lexer import lexer
 from parser import parser
 from prules import perrors
 from tokrules import terrors
-import readline
-from sys import argv,stderr
-from tree import node
+
+from sys import argv
 from getopt import gnu_getopt
-from string import replace as sreplace
 
-def find_column(inp,token):
-    last_cr = inp.rfind('\n',0,token.lexpos)
-    if last_cr < 0:
-        last_cr = 0
-    column = (token.lexpos - last_cr) + 1
-    return column
-
-def get_error_line_with_color(inp,token):
-    last_cr = inp.rfind('\n',0,token.lexpos)
-    next_cr = inp.find('\n',token.lexpos)
-    if last_cr < 0:
-        last_cr = 0
-    line = inp[last_cr+1:next_cr]
-    for i in range(len(line)):
-        if ord(line[i]) == 9:
-            continue
-        else:
-            break
-    line = sreplace(line[i:],token.value,'\033[4;32m'+token.value+'\033[0m')
-    return line
-
-def print_errors(merrors,data,filename='stdin'):
-    '''prints the errors returned by the parser'''
-    if merrors:
-        for p in merrors:
-            text = get_error_line_with_color(data,p)
-            pline = p.lineno
-            pcolumn = find_column(data,p)
-            stderr.write("{0}:{1}:{2}  syntax error: '{3}'\n".format(filename,pline,pcolumn,text,p))
-            exit(-1)
-        return False
-    else:
-        return True
+from error_handler import find_column, get_error_line_with_color, print_errors
     
-
-
 def main():
     if len(argv) > 1:
         #get command line arguements
-        switches,args = gnu_getopt(argv[1:],':o:')
-        switches = dict(switches)
+        switches = {'-o':'a.xml'}
+        setswitches,args = gnu_getopt(argv[1:],':o:')
+        setswitches = dict(setswitches)
+
+        for i in setswitches.keys():
+            switches[i] = setswitches[i]
 
         filename = args[0]
 

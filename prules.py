@@ -1,10 +1,9 @@
-#!/usr/bin/env python
-# -*- coding: utf-8
+#!/usr/bin/env python # -*- coding: utf-8
 #
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : parserules.py
 # Creation Date : 02-04-2012
-# Last Modified : Fri 11 May 2012 01:23:07 AM EEST
+# Last Modified : Fri 11 May 2012 11:57:49 AM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
 from tokrules import *
@@ -27,25 +26,14 @@ precedence = (  ('nonassoc','If'),
                 ('left','+','-'),
                 ('left','*','/','%'),
                 ('nonassoc','UNAR','Size'),
-                ('nonassoc','[',']','(',')')
+                ('right','[',']','(',')')
             )
 
 start = 'program'
 
 
 def gen_p_out(ptype,p,symbol=None):
-    #r = 'nili'
-    #try:
-    #    for i in p:
-    #        if type(i) == str:
-    #            try:
-    #                r.add(node(i,{'name':i}))
-    #            except AttributeError:
-    #                r = node(p[0],{'name':p[0]})
-    #            print i,r
-    #except TypeError:
-    #    return None
-
+    print p
     children = []
     for i in p[1:]:
         children.append(i)
@@ -84,10 +72,9 @@ def p_def(p):
 def p_type(p):
     '''
     type    :   simple_type
-            |   simple_type '[' ']'
+            |   simple_type '[' ']' 
     '''
     p[0] = gen_p_out('type',p)
-    #pass
     
 
 
@@ -96,7 +83,7 @@ def p_ret_type(p):
     ret_type    : Void
                 | type
     '''
-    pass
+    p[0] = gen_p_out('ret_type',p)
 
 def p_simple_type(p):
     '''
@@ -104,47 +91,59 @@ def p_simple_type(p):
                 | Int 
                 | Char
     '''
-    pass    
+    p[0] = gen_p_out('ret_type',p)
 
 def p_var_def(p):
     '''
     var_def     : type Id
                 | type Id ASSIGN expr
     '''
-    pass
+    p[0] = gen_p_out('Generic',p)
 
 def p_func_def(p):
     '''
     func_def    : ret_type Id '(' ')' block
                 | ret_type Id '(' formal_params ')' block
     '''
-    pass
+    p[0] = gen_p_out('Generic',p)
 
 def p_formal_params(p):
     '''
     formal_params   : type Id rep_formal_params
     '''
+    p[0] = gen_p_out('formal_params',p)
+
+
+def p_rep_formal_params_empty(p):
+    '''
+    rep_formal_params   : empty
+    '''
     pass
 
 def p_rep_formal_params(p):
     '''
-    rep_formal_params   : empty
-                        | ','  type Id rep_formal_params
+    rep_formal_params   : ','  type Id rep_formal_params
     '''
-    pass
+    p[0] = gen_p_out('formal_params',p)
+
 
 def p_actual_params(p):
     '''
     actual_params   : expr rep_actual_params
     '''
+    p[0] = gen_p_out('Generic',p)
+
+def p_rep_actual_params_empty(p):
+    '''
+    rep_actual_params   : empty
+    '''
     pass
 
 def p_rep_actual_params(p):
     '''
-    rep_actual_params   : empty
-                        | ',' expr rep_actual_params
+    rep_actual_params   : ',' expr rep_actual_params
     '''
-    pass
+    p[0] = gen_p_out('params',p)
 
 
 def p_block(p):
@@ -152,7 +151,7 @@ def p_block(p):
     block       : '{' '}'
                 | '{' stmt_list '}'
     '''
-    pass
+    p[0] = gen_p_out('Generic',p)
 
 
 def p_stmtm_list(p):
@@ -160,7 +159,7 @@ def p_stmtm_list(p):
     stmt_list   : stmt ';'
                 | stmt ';' stmt_list
     '''
-    pass
+    p[0] = gen_p_out('Generic',p)
 
 def p_stmt(p):
     '''
@@ -169,12 +168,13 @@ def p_stmt(p):
             | If '(' expr ')'  stmt Else stmt
             | For '(' var_def ';' expr ';' stmt ')' stmt
             | While '(' expr ')' stmt
-            | expr
+            | expr ';'
             | block
-            | Delete Id
-            | Ret expr
+            | Delete expr ';'
+            | Ret expr ';'
+            | Ret ';'
     '''
-    pass
+    p[0] = gen_p_out('stmt',p)
 
 
 def p_expr_atom(p):
@@ -191,6 +191,7 @@ def p_expr_atom(p):
                 | Id '(' actual_params ')'
                 | Id ASSIGN expr
     '''
+    p[0] = gen_p_out('expr_atom',p)
 
 def p_expr(p):
     '''
@@ -211,7 +212,7 @@ def p_expr(p):
             | expr  '^'    expr
 
     '''
-    pass
+    p[0] = gen_p_out('Generic',p)
     
 
 def p_un_op(p):
@@ -220,13 +221,13 @@ def p_un_op(p):
                 | '-' expr %prec UNAR
                 | '+' expr %prec UNAR
     '''
-    pass
+    p[0] = gen_p_out('Generic',p)
 
 def p_lval(p):
     '''
     lval    : Id
             | Id '[' expr ']'
     '''
-    pass
+    p[0] = gen_p_out('Generic',p)
 
     
