@@ -1,1 +1,8 @@
-void main( )  { print ( "hello world" ); }
+void main( )  
+{ 
+    print ( "hello world" ); 
+    int x := 1;
+    x := -x+1;
+
+
+}

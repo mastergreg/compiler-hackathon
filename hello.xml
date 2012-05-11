@@ -1,16 +1,44 @@
-<program  symbol="None" title="program">
-    <def  symbol="None" title="def">
-        'void''main''('')'<block  symbol="None" title="block">
-            '{'<stmt_list  symbol="None" title="stmt_list">
-                <stmt  symbol="None" title="stmt">
-                    <expr  symbol="None" title="expr">
-                        'print''('<actual_params  symbol="None" title="actual_params">
-                            <expr  symbol="None" title="expr">
-                                '"hello world"'</expr>
-                            None</actual_params>
-                        ')'</expr>
-                    ';'</stmt>
-            </stmt_list>
-            '}'</block>
-    </def>
+<program  symbol="None" type="None" title="program">
+<def  symbol="None" type="None" title="def">
+'void''main''('')'<block  symbol="None" type="None" title="block">
+'{'<stmt_list  symbol="None" type="None" title="stmt_list">
+<stmt  symbol="None" type="None" title="stmt">
+<expr  symbol="None" type="None" title="expr">
+'print''('<actual_params  symbol="None" type="None" title="actual_params">
+<expr  symbol="None" type="None" title="expr">
+'"hello world"'</expr>
+None</actual_params>
+')'</expr>
+';'</stmt>
+<stmt_list  symbol="None" type="None" title="stmt_list">
+<stmt  symbol="None" type="None" title="stmt">
+<var_def  symbol="None" type="None" title="var_def">
+<type  symbol="None" type="None" title="type">
+<simple_type  symbol="None" type="int" title="simple_type">
+'int'</simple_type>
+</type>
+'x'':='<expr  symbol="None" type="None" title="expr">
+'1'</expr>
+</var_def>
+';'</stmt>
+<stmt_list  symbol="None" type="None" title="stmt_list">
+<stmt  symbol="None" type="None" title="stmt">
+<binop  symbol=":=" type="None" title="binop">
+<expr  symbol="None" type="None" title="expr">
+'x'</expr>
+':='<binop  symbol="+" type="None" title="binop">
+<unop  symbol="-" type="None" title="unop">
+'-'<expr  symbol="None" type="None" title="expr">
+'x'</expr>
+</unop>
+'+'<expr  symbol="None" type="None" title="expr">
+'1'</expr>
+</binop>
+</binop>
+';'</stmt>
+</stmt_list>
+</stmt_list>
+</stmt_list>
+'}'</block>
+</def>
 </program>

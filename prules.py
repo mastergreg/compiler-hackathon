@@ -3,7 +3,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : parserules.py
 # Creation Date : 02-04-2012
-# Last Modified : Fri 11 May 2012 06:50:18 PM EEST
+# Last Modified : Fri 11 May 2012 08:26:29 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
 from tokrules import *
@@ -32,11 +32,11 @@ precedence = (  ('nonassoc','If'),
 start = 'program'
 
 
-def gen_p_out(ptype,p,symbol=None):
+def gen_p_out(title,p,symbol=None,ptype=None):
     children = []
     for i in p[1:]:
         children.append(i)
-    r = node(ptype, {'symbol':symbol,'title':ptype}, children)
+    r = node(title, {'symbol':symbol,'title':title, 'type':ptype}, children)
     return r
 
 
@@ -51,7 +51,6 @@ def p_error(p):
         yacc.restart()
     else:
         perrors.append(p)
-    print p, "error"
 
 
 def p_program(p):
@@ -67,10 +66,16 @@ def p_def(p):
     def     : var_def ';'
             | Void Id '(' ')' block
             | Void Id '(' formal_params ')' block
-            | type Id '(' ')' block
-            | type Id '(' formal_params ')' block
+
     '''
     p[0] = gen_p_out('def',p)
+
+def p_def_ext(p):
+    '''
+    def     : type Id '(' ')' block
+            | type Id '(' formal_params ')' block
+    '''
+    p[0] = gen_p_out('def',p,ptype=p[1])
 
 
 def p_var_def(p):
@@ -95,7 +100,7 @@ def p_simple_type(p):
                 | Int 
                 | Char
     '''
-    p[0] = gen_p_out('simple_type',p)
+    p[0] = gen_p_out('simple_type',p,ptype=p[1])
 
 
 def p_formal_params(p):
@@ -181,13 +186,28 @@ def p_expr(p):
             | Const_str
             | True
             | False
-            | expr  ASSIGN expr
-            | expr  '+'    expr
+    '''
+    p[0] = gen_p_out('expr',p)
+
+def p_bin_op(p):
+    '''
+    expr    : expr  ASSIGN expr
+    '''
+    p[0] = gen_p_out('binop',p,symbol=p[2])
+
+def p_bin_op_int(p):
+    '''
+    expr    : expr  '+'    expr
             | expr  '-'    expr
             | expr  '*'    expr
             | expr  '/'    expr
             | expr  '%'    expr
-            | expr  EQ     expr
+    '''
+    p[0] = gen_p_out('binop',p,symbol=p[2])
+
+def p_bin_op_bool(p):
+    '''
+    expr    : expr  EQ     expr
             | expr  NOTEQ  expr
             | expr  '>'    expr
             | expr  '<'    expr
@@ -196,9 +216,9 @@ def p_expr(p):
             | expr  BINAND expr
             | expr  OR     expr
             | expr  '^'    expr
-
     '''
-    p[0] = gen_p_out('expr',p)
+    p[0] = gen_p_out('binop',p,symbol=p[2])
+
     
 
 def p_un_op(p):
@@ -207,5 +227,5 @@ def p_un_op(p):
                 | '-' expr %prec UNAR
                 | '+' expr %prec UNAR
     '''
-    p[0] = gen_p_out('Generic',p)
+    p[0] = gen_p_out('unop',p,symbol=p[1])
 
