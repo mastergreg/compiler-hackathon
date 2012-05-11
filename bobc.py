@@ -4,7 +4,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : bobc.py
 # Creation Date : 29-03-2012
-# Last Modified : Fri 11 May 2012 11:32:47 AM EEST
+# Last Modified : Fri 11 May 2012 05:41:40 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 from lexer import lexer
 from parser import parser
@@ -13,6 +13,7 @@ from tokrules import terrors
 
 from sys import argv
 from getopt import gnu_getopt
+from string import replace as sreplace
 
 from error_handler import find_column, get_error_line_with_color, print_errors
     
@@ -36,7 +37,8 @@ def main():
         y = parser.parse(data)
         if print_errors(perrors,data,filename) and print_errors(terrors,data,filename):
             f = open(outfile,"w")
-            f.write(sreplace(repr(y),'None',''))
+            f.write(repr(y))
+            #f.write(sreplace(repr(y),'None',''))
             f.close()
     else:
         print "No input given"

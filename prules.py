@@ -3,7 +3,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : parserules.py
 # Creation Date : 02-04-2012
-# Last Modified : Fri 11 May 2012 11:57:49 AM EEST
+# Last Modified : Fri 11 May 2012 05:40:05 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
 from tokrules import *
@@ -33,7 +33,6 @@ start = 'program'
 
 
 def gen_p_out(ptype,p,symbol=None):
-    print p
     children = []
     for i in p[1:]:
         children.append(i)

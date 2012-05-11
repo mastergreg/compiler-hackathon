@@ -1,12 +1,11 @@
 <program> ::= <def> <program> | <def>
-<def> ::= <var-def> ';' | <func-def>
+<def> ::= <var-def> ';'
+        | 'void' <id> '(' (<formal-params>)? ')' <block>
+        | <type> <id> '(' (<formal-params>)? ')' <block>
+<var-def> ::= <type> <id> (':=' <expr>)?
 
 <type> ::= <simple-type> | <simple-type> '[' ']'
-<ret-type> ::= 'void' | <type>
 <simple-type> ::= 'bool' | 'int' | 'char'
-
-<var-def> ::= <type> <id> (':=' <expr>)?
-<func-def> ::= <ret-type> <id> '(' (<formal-params>)? ')' <block>
 
 <formal-params> ::= <type> <id> (',' <type> <id>)*
 <actual-params> ::= <expr> (',' <expr>)*
@@ -22,22 +21,19 @@
          | 'delete' expr ';'
          | 'return' (<expr>)? ';'
 
-<expr> ::= <lval>
+<expr> ::= <id>
+         | <expr> '[' expr ']'
          | <id> '(' (<actual-params>)? ')'
-         | <id> ':=' <expr>
-         | 'new' <type> '[' <expr> ']'
+         | <expr> ':=' <expr>  // we should check in semantics checks that lval is valid
+         | 'new' <simple-type> '[' <expr> ']'
          | 'size' <expr>   // Arrays will have their size builtin __size in lib
          | <expr> <bin-op> <expr>
          | <un-op> <expr>
-         | <expr> '[' <expr> ']'  // Array indexing
          | <int-literal> | <bool-literal> | <char-literal> | <string-literal>
          
 <bin-op> ::= '+' | '-' | '*' | '/' | '%' | '==' | '!='
            | '>' | '<' | '>=' | '<=" | '&&' | '||' | '^'
 <un-op>  ::= '!' | '-' | '+'
-
-<lval> ::= <id>
-         | <id> '[' <expr> ']'
 
 <int-literal> ::= [0-9]+
 <char-literal> ::= as in C
@@ -56,6 +52,18 @@ char[] strcpy(char[] str);
 int strcmp(char[] str1, char[] str2);
 char[] strcat(char[] str1, char[] str2);
 int strlen(char[] str); // strlen(str) < __size(str)
+
+Associativity
+=============
+%right ':='
+%left '&&' '||'
+%nonassoc '==' '!=' '>' '<' '<=' '>='
+%left '+' '-'
+%left '*' '/' '%'
+%nonassoc SIGN '+'
+%nonassoc SIGN '-'
+%nonassoc '!'
+%nonassoc size
 
 TODO
 ====
