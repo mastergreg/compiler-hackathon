@@ -1,12 +1,12 @@
-CC=./milc.py
-TARGET=mean
+CC=./bobc.py
+TARGET=hello
 all:	$(TARGET).xml
 
 $(TARGET): $(TARGET).bob
 	$(CC) -o $@ $<
 	@mv $(TARGET) $(TARGET).xml
 
-%.xml:	%.lla
+%.xml:	%.bob
 	$(CC) -o $@ $<
 	
 clean:
