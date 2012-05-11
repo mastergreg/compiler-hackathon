@@ -4,7 +4,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : tree.py
 # Creation Date : 26-04-2012
-# Last Modified : Fri 11 May 2012 08:55:55 PM EEST
+# Last Modified : Fri 11 May 2012 09:44:48 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
 def fixme(stuff):
@@ -35,6 +35,8 @@ class node(object):
         return iter(self._children)
     def symbol(self):
         return self._attrs['symbol']
+    def value(self):
+        return self._name
     def type(self):
         return self._type
 

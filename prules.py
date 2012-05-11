@@ -3,7 +3,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : parserules.py
 # Creation Date : 02-04-2012
-# Last Modified : Fri 11 May 2012 09:35:55 PM EEST
+# Last Modified : Fri 11 May 2012 10:01:40 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
 from tokrules import *
@@ -66,7 +66,7 @@ def p_def_v(p):
     def     : var_def ';'
 
     '''
-    p[0] = gen_p_out('def',p,ptype=p[1].type())
+    p[0] = gen_p_out('def', p, ptype=p[1].type())
 
 def p_def_void(p):
     '''
@@ -86,13 +86,13 @@ def p_def_ext(p):
     '''
     def     : type Id '(' ')' block
     '''
-    p[0] = gen_p_out('def', p, ptype=p[1])
+    p[0] = gen_p_out('def', p, ptype=p[1].value())
 
 def p_def_ext_params(p):
     '''
     def     : type Id '(' formal_params ')' block
     '''
-    p[0] = gen_p_out('def', p, ptype=p[1])
+    p[0] = gen_p_out('def', p, ptype=p[1].value())
 
 
 def p_var_def(p):
@@ -100,7 +100,7 @@ def p_var_def(p):
     var_def     : type Id
                 | type Id ASSIGN expr
     '''
-    p[0] = gen_p_out('var_def',p, ptype=p[1])
+    p[0] = gen_p_out('var_def',p, ptype=p[1].value())
 
 
 def p_type(p):
@@ -125,9 +125,9 @@ def p_formal_params(p):
     formal_params   : type Id rep_formal_params
     '''
     try:
-        p[0] = gen_p_out('formal_params',p,ptype=p[1]+","+p[3].type())
+        p[0] = gen_p_out('formal_params',p,ptype=p[1].value()+","+p[3].type())
     except:
-        p[0] = gen_p_out('formal_params',p,ptype=p[1])
+        p[0] = gen_p_out('formal_params',p,ptype=p[1].value())
 
 
 
@@ -202,13 +202,18 @@ def p_expr(p):
             | Id '(' actual_params ')'
             | New simple_type '[' expr ']'
             | Size expr
-            | Const_int
+    '''
+    p[0] = gen_p_out('expr',p)
+
+def p_expr_atom(p):
+    '''
+    expr    : Const_int
             | Const_char
             | Const_str
             | True
             | False
     '''
-    p[0] = gen_p_out('expr',p)
+    p[0] = gen_p_out('expr',p,ptype=p[1])
 
 def p_bin_op(p):
     '''
@@ -246,11 +251,12 @@ def p_un_op(p):
     '''
     expr        : '!' expr %prec UNAR
     '''
-    p[0] = gen_p_out('unop', p.symbol=p[1], ptype='bool')
+    p[0] = gen_p_out('unop', p, symbol=p[1], ptype='bool')
+     
 
-def p_un_op(p):
+def p_un_op_int(p):
     '''
-                | '-' expr %prec UNAR
+    expr        : '-' expr %prec UNAR
                 | '+' expr %prec UNAR
     '''
     p[0] = gen_p_out('unop',p,symbol=p[1], ptype='int')
