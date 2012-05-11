@@ -1,0 +1,27 @@
+void main()
+{
+    int numberOfRings;
+    print("Number of rigns: ");
+    char line := readLine();
+    numberOfRings := string_to_int(line);
+    print("\nHere is the solution:\n\n");
+    hanoi("left", "right", "middle", numberOfRings);
+}
+
+void move (char[] source, char[] target)
+{
+    print("Move from ");
+    print(source);
+    print(" to ");
+    print(target);
+    print(",\n");
+}
+
+void hanoi(char[] source, char[] target, char[] aux, int rings)
+{
+    if (rings >= 1) {
+        hanoi(source, aux, target, rigns-1);
+        move(source, target);
+        hanoi(aux, target, source, rings-1);
+    }
+}
