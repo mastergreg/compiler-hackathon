@@ -3,7 +3,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : parserules.py
 # Creation Date : 02-04-2012
-# Last Modified : Fri 11 May 2012 08:26:29 PM EEST
+# Last Modified : Fri 11 May 2012 09:35:55 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
 from tokrules import *
@@ -61,21 +61,38 @@ def p_program(p):
     p[0] = gen_p_out('program',p)
 
 
-def p_def(p):
+def p_def_v(p):
     '''
     def     : var_def ';'
-            | Void Id '(' ')' block
-            | Void Id '(' formal_params ')' block
 
     '''
-    p[0] = gen_p_out('def',p)
+    p[0] = gen_p_out('def',p,ptype=p[1].type())
+
+def p_def_void(p):
+    '''
+    def     : Void Id '(' ')' block
+
+    '''
+    p[0] = gen_p_out('def', p, ptype='void(void)')
+
+def p_def_void_params(p):
+    '''
+    def     : Void Id '(' formal_params ')' block
+
+    '''
+    p[0] = gen_p_out('def', p, ptype='void')
 
 def p_def_ext(p):
     '''
     def     : type Id '(' ')' block
-            | type Id '(' formal_params ')' block
     '''
-    p[0] = gen_p_out('def',p,ptype=p[1])
+    p[0] = gen_p_out('def', p, ptype=p[1])
+
+def p_def_ext_params(p):
+    '''
+    def     : type Id '(' formal_params ')' block
+    '''
+    p[0] = gen_p_out('def', p, ptype=p[1])
 
 
 def p_var_def(p):
@@ -83,7 +100,7 @@ def p_var_def(p):
     var_def     : type Id
                 | type Id ASSIGN expr
     '''
-    p[0] = gen_p_out('var_def',p)
+    p[0] = gen_p_out('var_def',p, ptype=p[1])
 
 
 def p_type(p):
@@ -91,7 +108,7 @@ def p_type(p):
     type    :   simple_type
             |   simple_type '[' ']' 
     '''
-    p[0] = gen_p_out('type',p)
+    p[0] = gen_p_out('type',p,ptype=p[1].type())
     
 
 def p_simple_type(p):
@@ -107,7 +124,11 @@ def p_formal_params(p):
     '''
     formal_params   : type Id rep_formal_params
     '''
-    p[0] = gen_p_out('formal_params',p)
+    try:
+        p[0] = gen_p_out('formal_params',p,ptype=p[1]+","+p[3].type())
+    except:
+        p[0] = gen_p_out('formal_params',p,ptype=p[1])
+
 
 
 def p_rep_formal_params_empty(p):
