@@ -4,14 +4,15 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : bobc.py
 # Creation Date : 29-03-2012
-# Last Modified : Sat 12 May 2012 01:25:31 PM EEST
+# Last Modified : Sat 12 May 2012 09:11:36 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 from lexer import lexer
 from parser import parser
 from prules import perrors
 from tokrules import terrors
+from tree import *
 
-from sys import argv
+from sys import argv,stdout
 from getopt import gnu_getopt
 from string import replace as sreplace
 
@@ -35,6 +36,7 @@ def main():
         data = f.read()
         f.close()
         y = parser.parse(data)
+        ASTprint(stdout,y)
         ter = print_errors(terrors,data,filename)
         per = print_errors(perrors,data,filename)
         if  ter and per:

@@ -3,7 +3,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : parserules.py
 # Creation Date : 02-04-2012
-# Last Modified : Sat 12 May 2012 06:54:12 PM EEST
+# Last Modified : Sat 12 May 2012 09:12:40 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
 from tokrules import *
@@ -271,14 +271,14 @@ def p_expr_3(p):
     '''
     expr    : Id '(' ')'
     '''
-    p[0] = FunctionExpression(p[1],NodeList(NullNode))
+    p[0] = FunctionExpression(Id(p[1],p.lineno),NodeList(NullNode))
     
 
 def p_expr_4(p):
     '''
     expr     : Id '(' actual_params ')'
     '''
-    p[0] = FunctionExpression(p[1],p[3])
+    p[0] = FunctionExpression(Id(p[1],p.lineno),p[3])
 
 def p_expr_new(p):
     '''
@@ -292,15 +292,30 @@ def p_expr_size(p):
     '''
     p[0] = SizeStatement(p[2])
 
-def p_expr_atom(p):
+def p_expr_atom_int(p):
     '''
     expr    : Const_int
-            | Const_char
-            | Const_str
-            | True
+    '''
+    p[0] = Const(p[1],BaseType('int'))
+    
+def p_expr_atom_char(p):
+    '''
+    expr    : Const_char
+    '''
+    p[0] = Const(p[1],BaseType('char'))
+    
+def p_expr_atom_str(p):
+    '''
+    expr    : Const_str
+    '''
+    p[0] = Const(p[1],BaseType('str'))
+
+def p_expr_atom_bool(p):
+    '''
+    expr    : True
             | False
     '''
-    p[0] = Const(p[1],type(eval(p[1])))
+    p[0] = Const(p[1],BaseType('bool'))
 
 
 def p_bin_op(p):

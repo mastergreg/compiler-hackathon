@@ -4,7 +4,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : tree.py
 # Creation Date : 26-04-2012
-# Last Modified : Sat 12 May 2012 08:47:50 PM EEST
+# Last Modified : Sat 12 May 2012 09:11:28 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
 def fixme(stuff):
@@ -139,8 +139,6 @@ class Id(Node):
         self.lineno = lineno
 
 class Const(Node):
-    """A numeric constant (i.e., an integral literal), such as
-    the number 5."""
     
     def __init__(self, value, type):
         self.value = value
@@ -430,10 +428,9 @@ class FunctionType(Type):
         return self.params
 
 
-def ASTprint(self, visitor):
-    visitor.visit(self.ast)
-    self.total_errors += visitor.errors
-    self.total_warnings += visitor.warnings
+def ASTprint(f,ast):
+    visitor = ASTPrinterVisitor(f,ast)
+    visitor.visit(visitor.ast)
 
 class Visitor:
     """The base visitor class.  This is an abstract base class."""
@@ -482,7 +479,8 @@ class ASTPrinterVisitor(Visitor):
     the abstract syntax tree, for debugging purposes, to an
     output file."""
     
-    def __init__(self, ast_file, indent_amt=2):
+    def __init__(self, ast_file, ast, indent_amt=2):
+        self.ast = ast
         self.ast_file = ast_file
         Visitor.__init__(self)
         self._indent = 0
@@ -505,7 +503,10 @@ class ASTPrinterVisitor(Visitor):
         # If the node has a type associated with it,
         # print the string of the type.
         if node.__dict__.has_key("type"):
-            self.p("  Type-string: %s" % node.type.get_string())
+            try:
+                self.p("  Type-string: %s" % node.type.get_string())
+            except:
+                self.p("  Type-string: %s" % node.type)
 
         # Find all attributes of the node that are ints or
         # strings and aren't 'private' (i.e., don't begin with
@@ -519,11 +520,14 @@ class ASTPrinterVisitor(Visitor):
                 self.p("  %s: %s" % (key, str(val)))
 
     def pSubnodeInfo(self, subnode, label):
-        if not subnode.is_null():
-            self.p("  %s:" % label)
-            self.indent()
-            subnode.accept(self)
-            self.unindent()
+        try:
+            if not subnode.is_null():
+                self.p("  %s:" % label)
+                self.indent()
+                subnode.accept(self)
+                self.unindent()
+        except:
+            print subnode
 
     def vNullNode(self, node):
         self.pNodeInfo(node)
