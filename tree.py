@@ -4,7 +4,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : tree.py
 # Creation Date : 26-04-2012
-# Last Modified : Sat 12 May 2012 08:45:16 PM EEST
+# Last Modified : Sat 12 May 2012 08:47:50 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
 def fixme(stuff):
@@ -428,6 +428,12 @@ class FunctionType(Type):
         """Returns the list of parameters for the function."""
         
         return self.params
+
+
+def ASTprint(self, visitor):
+    visitor.visit(self.ast)
+    self.total_errors += visitor.errors
+    self.total_warnings += visitor.warnings
 
 class Visitor:
     """The base visitor class.  This is an abstract base class."""
