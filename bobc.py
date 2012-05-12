@@ -4,7 +4,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : bobc.py
 # Creation Date : 29-03-2012
-# Last Modified : Fri 11 May 2012 07:11:09 PM EEST
+# Last Modified : Sat 12 May 2012 01:25:31 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 from lexer import lexer
 from parser import parser
@@ -35,7 +35,9 @@ def main():
         data = f.read()
         f.close()
         y = parser.parse(data)
-        if print_errors(perrors,data,filename) and print_errors(terrors,data,filename):
+        ter = print_errors(terrors,data,filename)
+        per = print_errors(perrors,data,filename)
+        if  ter and per:
             f = open(outfile,"w")
             f.write(repr(y))
             #f.write(sreplace(repr(y),'None',''))

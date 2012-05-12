@@ -3,7 +3,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : parserules.py
 # Creation Date : 02-04-2012
-# Last Modified : Fri 11 May 2012 10:01:40 PM EEST
+# Last Modified : Sat 12 May 2012 01:27:08 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
 from tokrules import *
@@ -47,10 +47,11 @@ def p_empty(p):
 
 
 def p_error(p):
-    if p:
-        yacc.restart()
-    else:
-        perrors.append(p)
+    perrors.append(p)
+    while 1:
+        tok = yacc.token()
+        if not tok or tok.value == '}': break
+    yacc.restart()
 
 
 def p_program(p):

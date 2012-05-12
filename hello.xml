@@ -36,6 +36,22 @@ None</actual_params>
 </binop>
 </binop>
 ';'</stmt>
+<stmt_list  symbol="None" type="None" title="stmt_list">
+<stmt  symbol="None" type="None" title="stmt">
+<binop  symbol=":=" type="None" title="binop">
+<expr  symbol="None" type="None" title="expr">
+'x'</expr>
+':='<binop  symbol="+" type="int" title="binop">
+<unop  symbol="-" type="int" title="unop">
+'-'<expr  symbol="None" type="None" title="expr">
+'x'</expr>
+</unop>
+'+'<expr  symbol="None" type="1" title="expr">
+'1'</expr>
+</binop>
+</binop>
+';'</stmt>
+</stmt_list>
 </stmt_list>
 </stmt_list>
 </stmt_list>

@@ -3,6 +3,7 @@ void main( )
     print ( "hello world" ); 
     int x := 1;
     x := -x+1;
+    x := -x+1;
 
 
 }
