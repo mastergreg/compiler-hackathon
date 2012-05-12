@@ -3,7 +3,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : parserules.py
 # Creation Date : 02-04-2012
-# Last Modified : Sat 12 May 2012 01:27:08 PM EEST
+# Last Modified : Sat 12 May 2012 05:55:50 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
 from tokrules import *
@@ -56,10 +56,14 @@ def p_error(p):
 
 def p_program(p):
     '''
-    program  :   def program
-             |   def
+    program  :   def
     '''
-    p[0] = gen_p_out('program',p)
+    p[0] = TranslationUnit(p[1])
+def p_program(p):
+    '''
+    program  :   def program
+    '''
+    p[0] = p[1].add(p[2])
 
 
 def p_def_v(p):
@@ -67,49 +71,58 @@ def p_def_v(p):
     def     : var_def ';'
 
     '''
-    p[0] = gen_p_out('def', p, ptype=p[1].type())
+    p[0] = p[1]
 
 def p_def_void(p):
     '''
     def     : Void Id '(' ')' block
 
     '''
-    p[0] = gen_p_out('def', p, ptype='void(void)')
+    p[0] = FunctionDefn(Declaration(p[2],'void'),p[5])
 
 def p_def_void_params(p):
     '''
     def     : Void Id '(' formal_params ')' block
 
     '''
-    p[0] = gen_p_out('def', p, ptype='void')
+    p[0] = FunctionExpression(FunctionDefn(Declaration(p[2],'void'),p[6]),p[4])
 
 def p_def_ext(p):
     '''
     def     : type Id '(' ')' block
     '''
-    p[0] = gen_p_out('def', p, ptype=p[1].value())
+    p[0] = FunctionDefn(Declaration(p[2],p[1]),p[5])
 
 def p_def_ext_params(p):
     '''
     def     : type Id '(' formal_params ')' block
     '''
-    p[0] = gen_p_out('def', p, ptype=p[1].value())
+    p[0] = FunctionExpression(FunctionDefn(Declaration(p[2],p[1]),p[6]),p[4])
 
 
 def p_var_def(p):
     '''
     var_def     : type Id
-                | type Id ASSIGN expr
     '''
-    p[0] = gen_p_out('var_def',p, ptype=p[1].value())
+    p[0] = Declaration(p[2],p[1])
+def p_var_def_assign(p):
+    '''
+    var_def     : type Id ASSIGN expr
+    '''
+    p[0] = Binop(Declaration(p[2],p[1]),p[4],p[3])
 
 
 def p_type(p):
     '''
     type    :   simple_type
-            |   simple_type '[' ']' 
     '''
-    p[0] = gen_p_out('type',p,ptype=p[1].type())
+    p[0] = p[1]
+
+def p_type(p):
+    '''
+    type    :   simple_type '[' ']' 
+    '''
+    p[0] = ArrayOf(p[1])
     
 
 def p_simple_type(p):
@@ -118,17 +131,15 @@ def p_simple_type(p):
                 | Int 
                 | Char
     '''
-    p[0] = gen_p_out('simple_type',p,ptype=p[1])
+    p[0] = BaseType(str(p[2].value).lower())
 
 
 def p_formal_params(p):
     '''
     formal_params   : type Id rep_formal_params
     '''
-    try:
-        p[0] = gen_p_out('formal_params',p,ptype=p[1].value()+","+p[3].type())
-    except:
-        p[0] = gen_p_out('formal_params',p,ptype=p[1].value())
+    p[0] = ParamList(Declaration(p[2],p[1]))
+    p[0].add(p[3])
 
 
 
@@ -142,14 +153,16 @@ def p_rep_formal_params(p):
     '''
     rep_formal_params   : ','  type Id rep_formal_params
     '''
-    p[0] = gen_p_out('formal_params',p)
+    p[0] = ParamList(Declaration(p[3],p[2]))
+    p[0].add(p[4])
 
 
 def p_actual_params(p):
     '''
     actual_params   : expr rep_actual_params
     '''
-    p[0] = gen_p_out('actual_params',p)
+    p[0] = ArgumentList(p[1])
+    p[0].add(p[2])
 
 def p_rep_actual_params_empty(p):
     '''
@@ -161,7 +174,8 @@ def p_rep_actual_params(p):
     '''
     rep_actual_params   : ',' expr rep_actual_params
     '''
-    p[0] = gen_p_out('params',p)
+    p[0] = ArgumentList(p[2])
+    p[0].add(p[3])
 
 
 def p_block(p):
