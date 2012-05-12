@@ -4,7 +4,7 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : tree.py
 # Creation Date : 26-04-2012
-# Last Modified : Sat 12 May 2012 05:53:40 PM EEST
+# Last Modified : Sat 12 May 2012 08:45:16 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
 def fixme(stuff):
@@ -159,9 +159,14 @@ class Unaryop(Node):
     def __init__(self, node):
         self.expr = node
 
+class Not(Unaryop):
+    def calculate(self):
+        val = self.expr.calculate()
+        if val != None:
+            return not val
+        return None
+
 class Negative(Unaryop):
-    """A negative unary operator, e.g. '-5'."""
-    
     def calculate(self):
         val = self.expr.calculate()
         if val != None:
@@ -169,8 +174,6 @@ class Negative(Unaryop):
         return None
 
 class Positive(Unaryop):
-    """A negative unary operator, e.g. '-5'."""
-    
     def calculate(self):
         val = self.expr.calculate()
         if val != None:
@@ -204,12 +207,36 @@ class Binop(Node):
 class IfStatement(Node):
     """An if/then/else statement."""
     
+    def __init__(self, expr, then_stmt):
+        self.expr = expr
+        self.then_stmt = then_stmt
+
+class IfElseStatement(Node):
+    """An if/then/else statement."""
+    
     def __init__(self, expr, then_stmt, else_stmt):
         self.expr = expr
         self.then_stmt = then_stmt
         self.else_stmt = else_stmt
 
 class ReturnStatement(Node):
+    def __init__(self, expr=None):
+        self.expr = expr
+
+class Statement(Node):
+    def __init__(self, expr):
+        self.expr = expr
+
+class SizeStatement(Node):
+    def __init__(self, expr):
+        self.expr = expr
+
+class NewStatement(Node):
+    def __init__(self, type, expr):
+        self.type = type
+        self.size = expr
+
+class DeleteStatement(Node):
     """A return statement, used to exit a function and optionally
     return a value."""
     
@@ -402,345 +429,180 @@ class FunctionType(Type):
         
         return self.params
 
-#  ---------------------------------------------------------------
-#  PARSER GRAMMAR / AST CONSTRUCTION
-#
-#  The only thing the yacc grammar rules do is create an
-#  abstract syntax tree.  Actual symbol table generation,
-#  type checking, flow control checking, etc. are done by
-#  the visitor classes (see cvisitors.py).
-#  ---------------------------------------------------------------
+class Visitor:
+    """The base visitor class.  This is an abstract base class."""
 
-# Precedence for ambiguous grammar elements.
-precedence = (
-    ('right', 'ELSE'),
-)
+    def __init__(self):
+        self.warnings = 0
+        self.errors = 0
 
-class ParseError(Exception):
-    "Exception raised whenever a parsing error occurs."
-
-    pass
-
-def p_translation_unit_01(t):
-    '''translation_unit : external_declaration'''
-    t[0] = TranslationUnit(t[1])
-
-def p_translation_unit_02(t):
-    '''translation_unit : translation_unit external_declaration'''
-    t[1].add(t[2])
-    t[0] = t[1]
-
-def p_external_declaration(t):
-    '''external_declaration : function_definition
-                            | declaration'''
-    t[0] = t[1]
-
-def p_function_definition_01(t):
-    '''function_definition : type_specifier declarator compound_statement'''
-    t[2].set_base_type(t[1])
-    t[0] = FunctionDefn(t[2], t[3])
-
-def p_function_definition_02(t):
-    '''function_definition : STATIC type_specifier declarator compound_statement'''
-    t[3].static = 1
-    t[3].set_base_type(t[2])
-    t[0] = FunctionDefn(t[3], t[4])
+    def _visitList(self, list):
+        """Visit a list of nodes.  'list' should be an actual list,
+        not a cparse.NodeList object."""
+        
+        last = None
+        for i in list:
+            last = i.accept(self)
+        return last
     
-def p_declaration_01(t):
-    '''declaration : type_specifier declarator SEMICOLON'''
-    if isinstance(t[2].type, FunctionType):
-        t[2].extern = 1
-    t[2].set_base_type(t[1])
-    t[0] = t[2]
+    def visit(self, node):
+        """Visits the given node by telling the node to call the
+        visitor's class-specific visitor method for that node's
+        class (i.e., double dispatching)."""
+        
+        return node.accept(self)
 
-def p_declaration_02(t):
-    '''declaration : EXTERN type_specifier declarator SEMICOLON'''
-    t[3].extern = 1
-    t[3].set_base_type(t[2])
-    t[0] = t[3]
+    def warning(self, str):
+        """Output a non-fatal compilation warning."""
+        
+        print "warning: %s" % str
+        self.warnings += 1
 
-def p_declaration_list_opt_01(t):
-    '''declaration_list_opt : empty'''
-    t[0] = NullNode()
+    def error(self, str):
+        """Output a fatal compilation error."""
+        
+        print "error: %s" % str
+        self.errors += 1
 
-def p_declaration_list_opt_02(t):
-    '''declaration_list_opt : declaration_list'''
-    t[0] = t[1]
+    def has_errors(self):
+        """Returns whether the visitor has encountered any
+        errors."""
+        
+        return self.errors > 0
 
-def p_declaration_list_02(t):
-    '''declaration_list : declaration'''
-    t[0] = DeclarationList(t[1])
 
-def p_declaration_list_03(t):
-    '''declaration_list : declaration_list declaration'''
-    t[1].add(t[2])
-    t[0] = t[1]
+class ASTPrinterVisitor(Visitor):
+    """Simple visitor that outputs a textual representation of
+    the abstract syntax tree, for debugging purposes, to an
+    output file."""
     
-def p_type_specifier(t):
-    '''type_specifier : INT
-                      | CHAR'''
-    t[0] = BaseType(t[1])
+    def __init__(self, ast_file, indent_amt=2):
+        self.ast_file = ast_file
+        Visitor.__init__(self)
+        self._indent = 0
+        self._indent_amt = indent_amt
 
-def p_declarator_01(t):
-    '''declarator : direct_declarator'''
-    t[0] = t[1]
+    def indent(self):
+        self._indent += self._indent_amt
 
-def p_declarator_02(t):
-    '''declarator : ASTERISK declarator'''
-    t[2].set_base_type(PointerType())
-    t[0] = t[2]
+    def unindent(self):
+        self._indent -= self._indent_amt
 
-def p_direct_declarator_01(t):
-    '''direct_declarator : ID'''
-    t[0] = Declaration(t[1])
+    def p(self, str):
+        self.ast_file.write(
+            (' ' * (self._indent_amt * self._indent) ) + str + "\n" )
 
-def p_direct_declarator_02(t):
-    '''direct_declarator : direct_declarator LPAREN parameter_type_list RPAREN'''
-    t[1].add_type(FunctionType(t[3]))
-    t[0] = t[1]
+    def pNodeInfo(self, node):
+        # Print out the name of the node's class.
+        self.p('+ ' + node.__class__.__name__)
 
-def p_direct_declarator_03(t):
-    '''direct_declarator : direct_declarator LPAREN RPAREN'''
-    t[1].add_type(FunctionType(ParamList()))
-    t[0] = t[1]
-    
-def p_parameter_type_list_01(t):
-    '''parameter_type_list : parameter_list'''
-    t[0] = t[1]
+        # If the node has a type associated with it,
+        # print the string of the type.
+        if node.__dict__.has_key("type"):
+            self.p("  Type-string: %s" % node.type.get_string())
 
-def p_parameter_type_list_02(t):
-    '''parameter_type_list : parameter_list COMMA ELLIPSIS'''
-    t[1].has_ellipsis = 1
-    t[0] = t[1]
+        # Find all attributes of the node that are ints or
+        # strings and aren't 'private' (i.e., don't begin with
+        # '_'), and print their values.
+        for key in node.__dict__.keys():
+            if key[0] == '_':
+                continue
+            val = node.__dict__[key]
+            if (isinstance(val, str) or
+                isinstance(val, int)):
+                self.p("  %s: %s" % (key, str(val)))
 
-def p_parameter_list_01(t):
-    '''parameter_list : parameter_declaration'''
-    t[0] = ParamList(t[1])
+    def pSubnodeInfo(self, subnode, label):
+        if not subnode.is_null():
+            self.p("  %s:" % label)
+            self.indent()
+            subnode.accept(self)
+            self.unindent()
 
-def p_parameter_list_02(t):
-    '''parameter_list : parameter_list COMMA parameter_declaration'''
-    t[1].add(t[3])
-    t[0] = t[1]
+    def vNullNode(self, node):
+        self.pNodeInfo(node)
 
-def p_parameter_declaration(t):
-    '''parameter_declaration : type_specifier declarator'''
-    # NOTE: this is the same code as p_declaration_01!
-    p_declaration_01(t)
+    def vArrayExpression(self, node):
+        self.pNodeInfo(node)
+        self.pSubnodeInfo(node.expr, "Expression")
+        self.pSubnodeInfo(node.index, "Index")
 
-def p_compound_statement_01(t):
-    '''compound_statement : LBRACE declaration_list_opt statement_list RBRACE'''
-    t[0] = CompoundStatement(t[2], t[3])
+    def vStringLiteral(self, node):
+        self.pNodeInfo(node)
+        self.p('  Value: "%s"' % node.get_sanitized_str())
 
-def p_compound_statement_02(t):
-    '''compound_statement : LBRACE declaration_list_opt RBRACE'''
-    t[0] = CompoundStatement(t[2], NullNode())
+    def vId(self, node):
+        self.pNodeInfo(node)
 
-def p_expression_statement(t):
-    '''expression_statement : expression SEMICOLON'''
-    t[0] = t[1]
+    def vUnaryop(self, node):
+        self.pNodeInfo(node)
+        self.pSubnodeInfo(node.expr, "Expression")
 
-def p_expression_01(t):
-    '''expression : equality_expression'''
-    t[0] = t[1]
+    def vFunctionExpression(self, node):
+        self.pNodeInfo(node)
+        self.pSubnodeInfo(node.function, "Function")
+        self.pSubnodeInfo(node.arglist, "Arguments")
 
-def p_expression_02(t):    
-    '''expression : equality_expression ASSIGN expression
-                  | equality_expression EQ_PLUS expression
-                  | equality_expression EQ_MINUS expression'''
-    t[0] = Binop(t[1], t[3], t[2])
+    def vConst(self, node):
+        self.pNodeInfo(node)
+        self.pSubnodeInfo(node.type, "Type")
 
-def p_equality_expression_01(t):
-    '''equality_expression : relational_expression'''
-    t[0] = t[1]
+    def vBinop(self, node):
+        self.pNodeInfo(node)
+        self.pSubnodeInfo(node.left, "Left operand")
+        self.pSubnodeInfo(node.right, "Right operand")
 
-def p_equality_expression_02(t):    
-    '''equality_expression : equality_expression EQ relational_expression
-                           | equality_expression NOT_EQ relational_expression'''
-    t[0] = _get_calculated(Binop(t[1], t[3], t[2]))
+    def vNodeList(self, node):
+        self.pNodeInfo(node)
+        self.indent()
+        self._visitList(node.nodes)
+        self.unindent()
 
-def p_relational_expression_01(t):
-    '''relational_expression : additive_expression'''
-    t[0] = t[1]
+    def vCompoundStatement(self, node):
+        self.pNodeInfo(node)
+        self.pSubnodeInfo(node.declaration_list, "Declaration list")
+        self.pSubnodeInfo(node.statement_list, "Statement list")        
 
-def p_relational_expression_02(t):
-    '''relational_expression : relational_expression LESS additive_expression
-                             | relational_expression GREATER additive_expression
-                             | relational_expression LESS_EQ additive_expression
-                             | relational_expression GREATER_EQ additive_expression'''
-    t[0] = _get_calculated(Binop(t[1], t[3], t[2]))
+    def vBaseType(self, node):
+        self.pNodeInfo(node)
 
-def p_postfix_expression_01(t):
-    '''postfix_expression : primary_expression'''
-    t[0] = t[1]
+    def vFunctionType(self, node):
+        self.pNodeInfo(node)
+        self.pSubnodeInfo(node.params, "Parameters:")
+        self.pSubnodeInfo(node.child, "Child:")
 
-def p_postfix_expression_02(t):
-    '''postfix_expression : postfix_expression LPAREN argument_expression_list RPAREN'''
-    t[0] = FunctionExpression(t[1], t[3])
-    pass
+    def vPointerType(self, node):
+        self.pNodeInfo(node)
+        self.pSubnodeInfo(node.child, "Child:")
 
-def p_postfix_expression_03(t):
-    '''postfix_expression : postfix_expression LPAREN RPAREN'''
-    t[0] = FunctionExpression(t[1], ArgumentList())
+    def vDeclaration(self, node):
+        self.pNodeInfo(node)
+        self.pSubnodeInfo(node.type, "Type")
 
-def p_postfix_expression_04(t):
-    '''postfix_expression : postfix_expression LBRACKET expression RBRACKET'''
-    t[0] = ArrayExpression(t[1], t[3])
+    def vReturnStatement(self, node):
+        self.pNodeInfo(node)
+        self.pSubnodeInfo(node.expr, "Expression")
 
-def p_argument_expression_list_01(t):
-    '''argument_expression_list : expression'''
-    t[0] = ArgumentList(t[1])
+    def vFunctionDefn(self, node):
+        self.pNodeInfo(node)
+        self.pSubnodeInfo(node.type, "Type")
+        self.pSubnodeInfo(node.body, "Body")
 
-def p_argument_expression_list_02(t):
-    '''argument_expression_list : argument_expression_list COMMA expression'''
-    t[1].add(t[3])
-    t[0] = t[1]
+    def vIfStatement(self, node):
+        self.pNodeInfo(node)
+        self.pSubnodeInfo(node.expr, "Expression")
+        self.pSubnodeInfo(node.then_stmt, "Then statement")
+        self.pSubnodeInfo(node.else_stmt, "Else statement")
 
-def p_unary_expression_01(t):
-    '''unary_expression : postfix_expression'''
-    t[0] = t[1]
+    def vWhileLoop(self, node):
+        self.pNodeInfo(node)
+        self.pSubnodeInfo(node.expr, "Expression")
+        self.pSubnodeInfo(node.stmt, "Statement")
 
-def p_unary_expression_02(t):
-    '''unary_expression : MINUS unary_expression'''
-    t[0] = _get_calculated(Negative(t[2]))
-
-def p_unary_expression_03(t):
-    '''unary_expression : PLUS unary_expression'''
-    t[0] = t[2]
-
-def p_unary_expression_03(t):
-    '''unary_expression : EXCLAMATION unary_expression'''
-    # horrible hack for the '!' operator... Just insert an
-    # (expr == 0) into the AST.
-    t[0] = _get_calculated(Binop(t[2], Const(0, BaseType('int')), '=='))
-
-def p_unary_expression_04(t):
-    '''unary_expression : ASTERISK unary_expression'''
-    t[0] = Pointer(t[2])
-
-def p_unary_expression_05(t):
-    '''unary_expression : AMPERSAND unary_expression'''
-    t[0] = AddrOf(t[2])
-
-def p_mult_expression_01(t):
-    '''mult_expression : unary_expression'''
-    t[0] = t[1]
-
-def p_mult_expression_02(t):
-    '''mult_expression : mult_expression ASTERISK unary_expression
-                       | mult_expression DIV unary_expression    
-                       | mult_expression MODULO unary_expression'''
-    t[0] = _get_calculated(Binop(t[1], t[3], t[2]))
-
-def p_additive_expression_01(t):
-    '''additive_expression : mult_expression'''
-    t[0] = t[1]
-
-def p_additive_expression_02(t):
-    '''additive_expression : additive_expression PLUS mult_expression
-                           | additive_expression MINUS mult_expression'''
-    t[0] = _get_calculated(Binop(t[1], t[3], t[2]))
-
-def p_primary_expression_01(t):
-    '''primary_expression : ID'''
-    t[0] = Id(t[1], t.lineno(1))
-
-def p_primary_expression_02(t):
-    '''primary_expression : INUMBER'''
-    t[0] = Const(int(t[1]), BaseType('int'))
-
-def p_primary_expression_03(t):
-    '''primary_expression : FNUMBER'''
-    t[0] = Const(float(t[1]), BaseType('double'))
-
-def p_primary_expression_04(t):
-    '''primary_expression : CHARACTER'''
-    t[0] = Const(ord(eval(t[1])), BaseType('char'))
-
-def p_primary_expression_05(t):
-    '''primary_expression : string_literal'''
-    t[0] = t[1]
-
-def p_primary_expression_06(t):
-    '''primary_expression : LPAREN expression RPAREN'''
-    t[0] = t[2]
-
-def p_string_literal_01(t):
-    '''string_literal : STRING'''
-    t[0] = StringLiteral(eval(t[1]))
-
-def p_string_literal_02(t):
-    '''string_literal : string_literal STRING'''
-    t[1].append_str(eval(t[2]))
-    t[0] = t[1]
-
-def p_statement(t):
-    '''statement : compound_statement
-                 | expression_statement
-                 | selection_statement
-                 | iteration_statement
-                 | jump_statement'''
-    t[0] = t[1]
-
-def p_jump_statement_01(t):
-    '''jump_statement : RETURN SEMICOLON'''
-    t[0] = ReturnStatement(NullNode())
-    
-def p_jump_statement_02(t):
-    '''jump_statement : RETURN expression SEMICOLON'''
-    t[0] = ReturnStatement(t[2])
-
-def p_jump_statement_03(t):
-    '''jump_statement : BREAK SEMICOLON'''
-    t[0] = BreakStatement()
-
-def p_jump_statement_04(t):
-    '''jump_statement : CONTINUE SEMICOLON'''
-    t[0] = ContinueStatement()
-
-def p_iteration_statement_01(t):
-    '''iteration_statement : WHILE LPAREN expression RPAREN statement'''
-    t[0] = WhileLoop(t[3], t[5])
-
-def p_iteration_statement_02(t):
-    '''iteration_statement : FOR LPAREN expression_statement expression_statement expression RPAREN statement'''
-    t[0] = ForLoop(t[3], t[4], t[5], t[7])
-
-def p_selection_statement_01(t):
-    '''selection_statement : IF LPAREN expression RPAREN statement'''
-    t[0] = IfStatement(t[3], t[5], NullNode())
-
-def p_selection_statement_02(t):
-    '''selection_statement : IF LPAREN expression RPAREN statement ELSE statement'''
-    t[0] = IfStatement(t[3], t[5], t[7])
-
-def p_statement_list_02(t):
-    '''statement_list : statement'''
-    t[0] = StatementList(t[1])
-
-def p_statement_list_03(t):
-    '''statement_list : statement_list statement'''
-    t[1].add(t[2])
-    t[0] = t[1]
-
-def p_empty(t):
-    'empty :'
-    pass
-
-def p_error(t):
-    print "You've got a syntax error somewhere in your code."
-    print "It could be around line %d." % t.lineno
-    print "Good luck finding it."
-    raise ParseError()
-
-yacc.yacc(debug=1)
-
-#  ---------------------------------------------------------------
-#  End of cparse.py
-#  ---------------------------------------------------------------
-
-
-
-
-
-
+    def vForLoop(self, node):
+        self.pNodeInfo(node)
+        self.pSubnodeInfo(node.begin_stmt, "Begin statement")
+        self.pSubnodeInfo(node.expr, "Test expression")
+        self.pSubnodeInfo(node.end_stmt, "End statement")
+        self.pSubnodeInfo(node.stmt, "Statement")
 

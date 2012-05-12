@@ -3,12 +3,12 @@
 #* -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
 # File Name : parserules.py
 # Creation Date : 02-04-2012
-# Last Modified : Sat 12 May 2012 05:55:50 PM EEST
+# Last Modified : Sat 12 May 2012 06:54:12 PM EEST
 #_._._._._._._._._._._._._._._._._._._._._.*/
 
 from tokrules import *
 import ply.yacc as yacc
-from tree import node
+from tree import *
 from sys import argv
 perrors = []
 
@@ -59,7 +59,8 @@ def p_program(p):
     program  :   def
     '''
     p[0] = TranslationUnit(p[1])
-def p_program(p):
+
+def p_program_2(p):
     '''
     program  :   def program
     '''
@@ -118,7 +119,7 @@ def p_type(p):
     '''
     p[0] = p[1]
 
-def p_type(p):
+def p_type_2(p):
     '''
     type    :   simple_type '[' ']' 
     '''
@@ -131,7 +132,7 @@ def p_simple_type(p):
                 | Int 
                 | Char
     '''
-    p[0] = BaseType(str(p[2].value).lower())
+    p[0] = BaseType(p[1].lower())
 
 
 def p_formal_params(p):
@@ -181,44 +182,115 @@ def p_rep_actual_params(p):
 def p_block(p):
     '''
     block       : '{' '}'
-                | '{' stmt_list '}'
     '''
-    p[0] = gen_p_out('block',p)
+    pass
+
+def p_block_full(p):
+    '''
+    block       : '{' stmt_list '}'
+    '''
+    p[0] = p[2]
 
 
 def p_stmt_list(p):
     '''
     stmt_list   : stmt 
-                | stmt stmt_list
     '''
-    p[0] = gen_p_out('stmt_list',p)
+    p[0] = Statement(p[1])
+
+def p_stmt_list_2(p):
+    '''
+    stmt_list   : stmt stmt_list
+    '''
+    p[0] = StatementList(p[1])
+    p[0].add(p[2])
+
+def p_stmt_if(p):
+    '''
+    stmt    : If '(' expr ')'  stmt
+    '''
+    p[0] = IfStatement(p[3], p[5])
+
+def p_stmt_ifelse(p):
+    '''
+    stmt    : If '(' expr ')'  stmt Else stmt
+    '''
+    p[0] = IfElseStatement(p[3], p[5], p[7])
+
+def p_stmt_for(p):
+    '''
+    stmt    : For '(' var_def ';' expr ';' stmt ')' stmt
+    '''
+    p[0] = ForLoop(p[3], p[4], p[5], p[6])
+
+def p_stmt_while(p):
+    '''
+    stmt    : While '(' expr ')' stmt
+    '''
+    p[0] = WhileLoop(p[3], p[5])
 
 def p_stmt(p):
     '''
     stmt    : var_def ';'
-            | If '(' expr ')'  stmt
-            | If '(' expr ')'  stmt Else stmt
-            | For '(' var_def ';' expr ';' stmt ')' stmt
-            | While '(' expr ')' stmt
             | expr ';'
             | block
-            | Delete expr ';'
-            | Ret expr ';'
+    '''
+    p[0] = p[1]
+
+def p_stmt_del(p):
+    '''
+    stmt    : Delete expr ';'
+    '''
+    p[0] = DeleteStatement([2])
+
+def p_stmt_ret(p):
+    '''
+    stmt    : Ret expr ';'
             | Ret ';'
     '''
-    p[0] = gen_p_out('stmt',p)
+    try:
+        p[0] = ReturnStatement(p[2])
+    except:
+        p[0] = ReturnStatement()
+
 
 
 def p_expr(p):
     '''
     expr    : Id
-            | expr '[' expr ']'
-            | Id '(' ')'
-            | Id '(' actual_params ')'
-            | New simple_type '[' expr ']'
-            | Size expr
     '''
-    p[0] = gen_p_out('expr',p)
+    p[0] = Id(p[1],p.lineno)
+
+def p_expr_2(p):
+    '''
+     expr    : expr '[' expr ']'
+    '''
+    p[0] = ArrayExpression(p[1],p[3])
+
+def p_expr_3(p):
+    '''
+    expr    : Id '(' ')'
+    '''
+    p[0] = FunctionExpression(p[1],NodeList(NullNode))
+    
+
+def p_expr_4(p):
+    '''
+    expr     : Id '(' actual_params ')'
+    '''
+    p[0] = FunctionExpression(p[1],p[3])
+
+def p_expr_new(p):
+    '''
+    expr    : New simple_type '[' expr ']'
+    '''
+    p[0] = NewStatement(p[2], p[4])
+
+def p_expr_size(p):
+    '''
+    expr    : Size expr
+    '''
+    p[0] = SizeStatement(p[2])
 
 def p_expr_atom(p):
     '''
@@ -228,13 +300,14 @@ def p_expr_atom(p):
             | True
             | False
     '''
-    p[0] = gen_p_out('expr',p,ptype=p[1])
+    p[0] = Const(p[1],type(eval(p[1])))
+
 
 def p_bin_op(p):
     '''
     expr    : expr  ASSIGN expr
     '''
-    p[0] = gen_p_out('binop',p,symbol=p[2])
+    p[0] = Binop(p[1], p[3], p[2])
 
 def p_bin_op_int(p):
     '''
@@ -244,7 +317,7 @@ def p_bin_op_int(p):
             | expr  '/'    expr
             | expr  '%'    expr
     '''
-    p[0] = gen_p_out('binop',p,symbol=p[2], ptype='int')
+    p[0] = Binop(p[1], p[3], p[2])
 
 def p_bin_op_bool(p):
     '''
@@ -258,21 +331,21 @@ def p_bin_op_bool(p):
             | expr  OR     expr
             | expr  '^'    expr
     '''
-    p[0] = gen_p_out('binop',p,symbol=p[2], ptype='bool')
-
-    
+    p[0] = Binop(p[1], p[3], p[2])
 
 def p_un_op(p):
     '''
     expr        : '!' expr %prec UNAR
     '''
-    p[0] = gen_p_out('unop', p, symbol=p[1], ptype='bool')
+    p[0] = Not(p[2])
      
-
 def p_un_op_int(p):
     '''
     expr        : '-' expr %prec UNAR
                 | '+' expr %prec UNAR
     '''
-    p[0] = gen_p_out('unop',p,symbol=p[1], ptype='int')
+    if p[1] == '+':
+        p[0] = Positive(p[2])
+    else:
+        p[0] = Negative(p[2])
 
